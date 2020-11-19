@@ -1,3 +1,5 @@
+![All Downloads](https://img.shields.io/github/downloads/jessev14/Multiattack-5e/total?style=for-the-badge)
+
 # Multiattack 5e
 
 Mulitattack 5e (MA5e) is a FoundryVTT module for the DnD5e system that streamlines the multiattack action.
