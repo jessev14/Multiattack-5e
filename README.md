@@ -1,7 +1,7 @@
 # Multiattack 5e
 
 Mulitattack 5e (MA5e) is a FoundryVTT module for the DnD5e system that streamlines the multiattack action.
-Users can perform several attack / damage rolls at once, and the output is condensed into a single chat card.
+Users can perform several attack / damage rolls at once, and the output is condensed into a custom chat card.
 
 ## Usage
 
