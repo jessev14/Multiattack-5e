@@ -6,10 +6,10 @@ Users can perform several attack / damage rolls at once, and the output is conde
 ## Usage
 
 ### Core system behavior 
-![default behavior](img/default.png)
+![default behavior](img/default.gif)
 
 ### With MA5e
-![MA5e behavior](img/MA5e.[png])
+![MA5e behavior](img/package-preview.png)
 
 ## Instructions
 
@@ -72,4 +72,4 @@ Since this module was primarily designed for my own use, I intend to keep it and
 
 Big thanks to @danielrab#7070 on the Foundry Discord channel for answering a bunch of my questions when I was starting out.
 
-Ping me on Discord @enso#0361 if you have any questions, run into any problems/incompatibilities, or have any technical feedback you'd like to throw my way. This is my first module and my first real JavaScript project outside of some macros, so I'm sure there are tons of areas of possible improvement.
+Ping me on Discord @enso#0361 if you have any questions, run into any problems/incompatibilities, or have any technical feedback you'd like to throw my way. This is my first module and my first real JavaScript project outside of some macros, so I'm sure there are tons of areas for possible improvement.
