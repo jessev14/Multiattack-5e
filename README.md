@@ -5,7 +5,7 @@ Users can perform several attack / damage rolls at once, and the output is conde
 
 ## Usage
 
-### Core system behavior 
+### Without MA5e 
 
 <img src="/img/default.gif" width="291" height="588"/>
 
