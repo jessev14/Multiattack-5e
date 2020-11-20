@@ -49,6 +49,6 @@ jobs:
         draft: false
         prerelease: false
         token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: './module.json,./module.zip'
+        artifacts: './module.json,./MA5e.zip'
         tag: latest
         body: ${{ github.event.release.body }}
