@@ -466,24 +466,23 @@ Hooks.once('ready', () => {
             }
             if (!data["bonus"]) parts.pop();
 
-            // Create the damage roll
-            let roll = new Roll(parts.join("+"), data);
-
-            // Modify the damage formula for critical hits
-            if (crit === true) {
-                roll.alter(criticalMultiplier, 0);      // Multiply all dice
-                if (roll.terms[0] instanceof Die) {   // Add bonus dice for only the main dice term
-                    roll.terms[0].alter(1, criticalBonusDice);
-                    roll._formula = roll.formula;
-                }
-                messageData.flavor += ` (${game.i18n.localize("DND5E.Critical")})`;
-                if ("flags.dnd5e.roll" in messageData) messageData["flags.dnd5e.roll"].critical = true;
-            }
-
-            // Execute the roll
             let rolls = [];
             for (let i = 0; i < numRolls; i++) {
+                // Create the damage roll
                 let roll = new Roll(parts.join("+"), data);
+
+                // Modify the damage formula for critical hits
+                if (crit === true) {
+                    roll.alter(criticalMultiplier, 0);      // Multiply all dice
+                    if (roll.terms[0] instanceof Die) {   // Add bonus dice for only the main dice term
+                        roll.terms[0].alter(1, criticalBonusDice);
+                        roll._formula = roll.formula;
+                    }
+                    messageData.flavor += ` (${game.i18n.localize("DND5E.Critical")})`;
+                    if ("flags.dnd5e.roll" in messageData) messageData["flags.dnd5e.roll"].critical = true;
+                }
+
+                // Execute the roll
                 try {
                     roll.roll();
                 } catch (err) {
