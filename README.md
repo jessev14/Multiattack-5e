@@ -27,6 +27,7 @@ Users can perform several attack / damage rolls at once, and the output is conde
 
 * Midi-QOL
 * Smooth Combat
+* Better Rolls 5e (if you're using BR, you probably don't need this module)
 
 MA5e was not designed to be used with any major combat automation modules. Therefore, Midi-QOL and Smooth Combat are not expected to be compatible as is.
 
