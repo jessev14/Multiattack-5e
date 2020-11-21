@@ -35,16 +35,13 @@ See Technical Information for details regarding implementation for possible idea
 
 ## Limitations
 
-As of v1.0.0, all custom multiattack chat cards are publically viewable.
-Allowing Private GM multiattack rolls is the focus of the next major version release.
-
 For rolls with formulas that contain more than one die type (e.g. 1d10 + 1d6), chat cards may not render completely accurately.
 This could be addressed, but the added complexity could make the module more susceptible to drastically breaking between updates. In addition, most damage formulas seem to only rely on one die type (e.g. 4d6).
 If there is significant desire for this feature, it can be added.
 
 ## Technical Information
 
-MA5e works by overriding these functions:
+MA5e works by overriding these functions in an 'ready' hook callback:
 * Item5e.prototype.rollAttack
 * Item5e.prototype.rollDamage
 
@@ -58,7 +55,7 @@ In addition, the following functions are used:
 * addChatMessageContextOptions
 * applyChatCardDamage
 
-All above functions are copy + pasted into a "ready" hook callback.
+All above functions are copy + pasted from their respective sources.
 They are then edited (including function name) to produce the MA5e features. As such, changes to the above functions in future updates may result in MA5e behaving differently than the rest of the system (or breaking entirely).
 
 Some changes to the above functions are extremely minor, so calls to the original functions may be implemented in a future release to add some protection from the module breaking between updates.
