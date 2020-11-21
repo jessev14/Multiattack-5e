@@ -67,7 +67,7 @@ Since this module was primarily designed for my own use, I intend to keep it and
 
 ## Future Implementations 
 
-* Private GM rolls (highest priority)
+* ~~Private GM rolls (highest priority)~~ Added in v2.0.0
 * Setting to set default number of rolls for attack / damage
 * Setting to allow each individual damage roll to be applied separately, instead of only applying the total
 * Localization with il18n (lowest priority; very few new strings)
@@ -77,3 +77,11 @@ Since this module was primarily designed for my own use, I intend to keep it and
 Big thanks to @danielrab#7070 on the Foundry Discord channel for answering a bunch of my questions when I was starting out.
 
 Ping me on Discord @enso#0361 if you have any questions, run into any problems/incompatibilities, or have any technical feedback you'd like to throw my way. This is my first module and my first real JavaScript project outside of some macros, so I'm sure there are tons of areas for possible improvement.
+
+## Changelog
+### v2.0.0
+* Adds in Private GM Roll (and other roll mode) functionality for custom multiattack chat cards
+### v1.1.1
+* Hotfix for a bug in critical damage handling
+### v1.0.0
+* Initial release
