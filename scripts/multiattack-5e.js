@@ -1,10 +1,10 @@
-console.log("MA5e_DEV | Loaded");
+console.log("MA5e | Loaded");
 
 import { addChatMessageContextOptions } from '/systems/dnd5e/module/chat.js';
 
 const blankRoll = new Roll("0").roll(); // straight from BR5e
 
-const rollDialogTemplate = "modules/multiattack-5e_DEV/templates/MA5e-roll-dialog.html";
+const rollDialogTemplate = "modules/multiattack-5e/templates/MA5e-roll-dialog.html";
 
 // Create array to pass to _damageRollDialogMA5e() to build number of rolls select list; get default set in per-user setting
 let attackNums = [
