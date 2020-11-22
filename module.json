@@ -4,7 +4,6 @@
     "description": "Allow multiple attack/damage rolls to be made at once and combines simultaneous rolls into a single chat card.",
     "minimumCoreVersion": "0.7.7",
     "compatibleCoreVersion": "0.7.7",
-    "version": "2.1.0",
     "author": "Jesse Vo (@enso#0361)",
     "esmodules": [
         "scripts/multiattack-5e.js"
