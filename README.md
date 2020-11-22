@@ -76,7 +76,7 @@ Big thanks to @danielrab#7070 on the Foundry Discord channel for answering a bun
 Ping me on Discord @enso#0361 if you have any questions, run into any problems/incompatibilities, or have any technical feedback you'd like to throw my way. This is my first module and my first real JavaScript project outside of some macros, so I'm sure there are tons of areas for possible improvement.
 
 ## Changelog
-### v2.1.0
+### v2.1.2
 * Adds default rolls functionality
 * Fixes fast forward rolling
 ### v2.0.0
