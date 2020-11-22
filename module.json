@@ -1,6 +1,6 @@
 {
-	"name": "multiattack-5e_DEV",
-	"title": "Multiattack 5e_DEV",
+	"name": "multiattack-5e",
+	"title": "Multiattack 5e",
 	"description": "Allow multiple attack/damage rolls to be made at once and combines simultaneous rolls into a single chat card.",
 	"minimumCoreVersion": "0.7.7",
 	"compatibleCoreVersion": "0.7.7",
