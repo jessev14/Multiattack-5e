@@ -1,25 +1,25 @@
 {
-	"name": "multiattack-5e_DEV",
-	"title": "Multiattack 5e_DEV",
-	"description": "Allow multiple attack/damage rolls to be made at once and combines simultaneous rolls into a single chat card.",
-	"minimumCoreVersion": "0.7.7",
-	"compatibleCoreVersion": "0.7.7",
-	"version": "1.0.0",
-	"author": "Jesse Vo (@enso#0361)",
-	"esmodules": [
-		"scripts/multiattack-5e.js"
-	],
-	"systems": [
-		"dnd5e"
-	],
-	"styles": [
-		"styles/MA5e.css"
-	],
-	"languages": [
-		{
-			"lang": "en",
-			"name": "English",
-			"path": "lang/en.json"
-		}
-	]
+    "name": "multiattack-5e",
+    "title": "Multiattack 5e",
+    "description": "Allow multiple attack/damage rolls to be made at once and combines simultaneous rolls into a single chat card.",
+    "minimumCoreVersion": "0.7.7",
+    "compatibleCoreVersion": "0.7.7",
+    "version": "2.1.0",
+    "author": "Jesse Vo (@enso#0361)",
+    "esmodules": [
+        "scripts/multiattack-5e.js"
+    ],
+    "systems": [
+        "dnd5e"
+    ],
+    "styles": [
+        "styles/MA5e.css"
+    ],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "lang/en.json"
+        }
+    ]
 }
