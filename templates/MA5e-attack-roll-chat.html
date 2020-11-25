@@ -1,35 +1,33 @@
-<div class="message-content">
-    <div class="dice-roll">
-        <div class="dice-formula">{{rolls.[0]._formula}}</div>
-        {{#each rolls}}
-        <div class="dice-result">
-            <div class="dice-tooltip" style="display: none;">
-                <section class="tooltip-part">
-                    <div class="dice">
-                        <header class="part-header flexrow">
-                            <span class="part-formula">{{this.terms.[0].formula}}</span>
-                            <span class="part-total">{{this.terms.[0].total}}</span>
-                        </header>
-                        <ol class="dice-rolls">
-                            {{#if this.crit}}
-                            <li class="roll die d20 max">{{this.results.[0]}}</li>
-                            {{else if this.fumb}}
-                            <li class="roll die d20 min">{{this.results.[0]}}</li>
-                            {{else}}
-                            <li class="roll die d20">{{this.results.[0]}}</li>
-                            {{/if}}
-                        </ol>
-                    </div>
-                </section>
-            </div>
-            {{#if this.crit}}
-            <h4 class="dice-total critical">{{this.total}}</h4>
-            {{else if this.fumb}}
-            <h4 class="dice-total fumble">{{this.total}}</h4>
-            {{else}}
-            <h4 class="dice-total">{{this.total}}</h4>
-            {{/if}}
+<div class="dice-roll">
+    <div class="dice-formula">{{rolls.[0]._formula}}</div>
+    {{#each rolls}}
+    <div class="dice-result">
+        <div class="dice-tooltip" style="display: none;">
+            <section class="tooltip-part">
+                <div class="dice">
+                    <header class="part-header flexrow">
+                        <span class="part-formula">{{this.terms.[0].formula}}</span>
+                        <span class="part-total">{{this.terms.[0].total}}</span>
+                    </header>
+                    <ol class="dice-rolls">
+                        {{#if this.crit}}
+                        <li class="roll die d20 max">{{this.results.[0]}}</li>
+                        {{else if this.fumb}}
+                        <li class="roll die d20 min">{{this.results.[0]}}</li>
+                        {{else}}
+                        <li class="roll die d20">{{this.results.[0]}}</li>
+                        {{/if}}
+                    </ol>
+                </div>
+            </section>
         </div>
-        {{/each}}
+        {{#if this.crit}}
+        <h4 class="dice-total critical">{{this.total}}</h4>
+        {{else if this.fumb}}
+        <h4 class="dice-total fumble">{{this.total}}</h4>
+        {{else}}
+        <h4 class="dice-total">{{this.total}}</h4>
+        {{/if}}
     </div>
+    {{/each}}
 </div>
