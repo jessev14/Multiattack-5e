@@ -173,7 +173,8 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
             } else {
                 attackNums.forEach(n => {
                     n.default = false;
-                })
+                });
+                attackDefault = 1;
             }
         }
 
@@ -451,7 +452,8 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
             } else {
                 hitNums.forEach(n => {
                     n.default = false;
-                })
+                });
+                hitDefault = 1;
             }
         }
         
