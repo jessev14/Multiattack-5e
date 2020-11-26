@@ -33,12 +33,6 @@ MA5e was not designed to be used with any major combat automation modules. There
 
 See Technical Information for details regarding implementation for possible ideas on how to extend compatibility.
 
-## Limitations
-
-For rolls with formulas that contain more than one die type (e.g. 1d10 + 1d6), chat cards may not render completely accurately.
-This could be addressed, but the added complexity could make the module more susceptible to drastically breaking between updates. In addition, most damage formulas seem to only rely on one die type (e.g. 4d6).
-If there is significant desire for this feature, it can be added.
-
 ## Technical Information
 
 MA5e works by overriding these functions in an 'ready' hook callback:
@@ -66,7 +60,7 @@ Since this module was primarily designed for my own use, I intend to keep it and
 
 * ~~Private GM rolls (highest priority)~~ Added in v2.0.0
 * ~~Setting to set default number of rolls for attack / damage~~ Added in v2.1.2
-* Setting to allow each individual damage roll to be applied separately, instead of only applying the total
+* ~~Setting to allow each individual damage roll to be applied separately, instead of only applying the total~~ Concept scrapped. Submit an issue if this feature is desired.
 * Localization with il18n (lowest priority; very few new strings)
 
 ## Credits and Contact
