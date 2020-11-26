@@ -9,10 +9,10 @@ Users can perform several attack / damage rolls at once, and the output is conde
 
 ### Without MA5e 
 
-<img src="/img/default.gif" width="291" height="588"/>
+<img src="/img/default.gif" width="295" height="667"/>
 
 ### With MA5e
-<img src="/img/package-preview.png" width="291" height="588"/>
+<img src="/img/package-preview.png" width="295" height="667"/>
 
 ## Instructions
 
