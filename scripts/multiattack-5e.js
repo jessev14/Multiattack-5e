@@ -251,10 +251,6 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
         return rolls;
     };
 
-    //TO DO -jv
-    // def = get( game.settings.MA5e.defaultAttack );
-    // num[def].default = true;
-
     // Create the Rolls array
     const rolls = fastForward ? _roll(parts, adv) :
         await _d20RollDialogMA5e({ template, title, parts, data, rollMode: messageOptions.rollMode, dialogOptions, roll: _roll });
@@ -270,14 +266,22 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
         return rolls[0];
     } else {
 
-        rolls.forEach(r => {
-            r.results[0] >= r.terms[0].options.critical ? r.crit = true : r.crit = false;
-            r.results[0] <= r.terms[0].options.fumble ? r.fumb = true : r.fumb = false;
-        });
+        let rollsArray = await Promise.all(rolls.map(async r => {
+            if (r.results[0] >= r.terms[0].options.critical) {
+                r.crit = ' critical';
+            } else if (r.results[0] <= r.terms[0].options.fumble) {
+                r.crit = ' fumble';
+            } else {
+                r.crit = '';
+            }
+            r.tooltip = await r.getTooltip();
+            return r;
+        }));
+        
 
         // Use custom attackTemplate and data from rolls array to render html content for chat card
         const attackTemplate = "/modules/multiattack-5e/templates/MA5e-attack-roll-chat.html";
-        const htmlContent = await renderTemplate(attackTemplate, { rolls });
+        const htmlContent = await renderTemplate(attackTemplate, { rolls: rollsArray });
 
         messageData = mergeObject({
             user: game.user._id,
@@ -285,7 +289,6 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
             // sound: CONFIG.sounds.dice,
             content: htmlContent,
             roll: blankRoll
-            //flavor: htmlContent
         }, messageData);
 
         // Animate DSN for all rolls (await on last roll to have all animations finish before generating chat card)
@@ -506,21 +509,20 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
         // Append roll objects to compile properly with damageTemplate
         let totalDamage = 0;
         rolls.forEach(r => {
-            const faces = r.terms[0].faces;
             totalDamage += r.total;
-            r.terms[0].results.forEach(d => {
-                d.faces = faces;
-                d.result === d.faces ? d.max = true : d.max = false;
-                d.result === 1 ? d.min = true : d.min = false;
-            })
         });
+
+        let rollsArray = await Promise.all(rolls.map(async r => {
+            r.tooltip = await r.getTooltip();
+            return r;
+        }));
 
         // Add flag for use in damage application
         messageData["flags.MA5e.totalDamage"] = totalDamage;
 
         // Use custom attackTemplate and data from rolls array to render html content for chat card
         const damageTemplate = "/modules/multiattack-5e/templates/MA5e-damage-roll-chat.html";
-        const htmlContent = await renderTemplate(damageTemplate, { rolls: rolls, totalDamage: totalDamage });
+        const htmlContent = await renderTemplate(damageTemplate, { rolls: rollsArray, totalDamage: totalDamage });
 
         messageData = mergeObject({
             user: game.user._id,

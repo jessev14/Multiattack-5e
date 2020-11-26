@@ -1,30 +1,17 @@
 <div class="dice-roll">
+    {{#if flavor}}
+    <div class="dice-flavor">{{flavor}}</div>
+    {{/if}}
     <div class="dice-formula">{{rolls.[0]._formula}}</div>
     {{#each rolls}}
     <div class="dice-result">
-        <div class="dice-tooltip" style="display: none;">
-            <section class="tooltip-part">
-                <div class="dice">
-                    <header class="part-header flexrow">
-                        <span class="part-formula">{{this.terms.[0].formula}}</span>
-                        <span class="part-total">{{this.terms.[0].total}}</span>
-                    </header>
-                    <ol class="dice-rolls">
-                        {{#each this.terms.[0].results}}
-                        <li class="roll die d{{this.faces}}{{#if this.max}} max{{else if this.min}} min{{/if}}">
-                            {{this.result}}</li>
-                        {{/each}}
-                    </ol>
-                </div>
-            </section>
-        </div>
+        {{{this.tooltip}}}
         <h4 class="dice-total">{{this.total}}</h4>
     </div>
     {{/each}}
-</div>
-<div class="dice-roll">
     <div class="dice-result">
-        <div class="dice-tooltip" style="display: none;">
+        <div class="dice-tooltip">
+            <br>    
         </div>
         <h4 class="dice-total totalMA5e">Total: {{totalDamage}}</h4>
     </div>
