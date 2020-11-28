@@ -60,8 +60,9 @@ Since this module was primarily designed for my own use, I intend to keep it and
 
 * ~~Private GM rolls (highest priority)~~ Added in v2.0.0
 * ~~Setting to set default number of rolls for attack / damage~~ Added in v2.1.2
+* New workflow for attacking with different items in single multiattack action
+* Localization with il18n (low priority; very few new strings)
 * ~~Setting to allow each individual damage roll to be applied separately, instead of only applying the total~~ Concept scrapped. Submit an issue if this feature is desired.
-* Localization with il18n (lowest priority; very few new strings)
 
 ## Credits and Contact
 
