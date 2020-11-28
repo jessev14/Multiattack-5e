@@ -71,6 +71,11 @@ Big thanks to @danielrab#7070 on the Foundry Discord channel for answering a bun
 Ping me on Discord @enso#0361 if you have any questions, run into any problems/incompatibilities, or have any technical feedback you'd like to throw my way. This is my first module and my first real JavaScript project outside of some macros, so I'm sure there are tons of areas for possible improvement.
 
 ## Changelog
+### v2.2.0
+* Adds styling of Total Damage font to blue.
+* Adds support for mixed die type rolls (e.g. 2d10 + 3d6).
+* Fixes fast forward rolling (again).
+* Lots of under-the-hood clean up of HTML template compiling and rendering.
 ### v2.1.2
 * Adds default rolls functionality
 * Fixes fast forward rolling
