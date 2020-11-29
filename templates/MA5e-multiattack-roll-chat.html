@@ -1,0 +1,17 @@
+<div class="dice-roll">
+    {{#if flavor}}
+    <div class="dice-flavor">{{flavor}}</div>
+    {{/if}}
+    <div class="dice-formula">{{rolls.[0]._formula}}</div>
+    {{#each rolls}}
+    <div class="dice-result">
+        {{{this.tooltip}}}
+        <h4 class="dice-total{{this.crit}}">{{this.total}}</h4>
+    </div>
+    {{/each}}
+</div>
+<div class="card-buttons">
+    <button data-action="damageMA5e">
+        Damage
+    </button>
+</div>

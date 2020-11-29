@@ -2,18 +2,21 @@
     "name": "multiattack-5e",
     "title": "Multiattack 5e",
     "description": "Allow multiple attack/damage rolls to be made at once and combines simultaneous rolls into a single chat card.",
-    "version": "2.2.0",
+    "version": "3.0.0",
     "minimumCoreVersion": "0.7.7",
     "compatibleCoreVersion": "0.7.7",
     "author": "Jesse Vo (@enso#0361)",
     "esmodules": [
-        "scripts/multiattack-5e.js"
+        "./scripts/multiattack-5e.js",
+        "./scripts/patches.js",
+        "./scripts/multi-item-attack.js",
+        "./scripts/compatibilityChecker.js"
     ],
     "systems": [
         "dnd5e"
     ],
     "styles": [
-        "styles/MA5e.css"
+        "./styles/MA5e.css"
     ],
     "languages": [
         {

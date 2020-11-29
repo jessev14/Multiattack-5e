@@ -11,3 +11,17 @@
 .dice-result > .totalMA5e {
     color: rgb(44, 42, 168);
 }
+
+.MA5e-multi-item > input[type=text].inputMA5e {
+    flex: 1;
+}
+
+.MA5e-multi-item > input[type=checkbox].dialog-checkbox {
+    flex: 1;
+}
+
+.MA5e-multi-item > img {
+    width: 30px;
+    height: 30px;
+    margin: 0px 5px 0px 0px;
+}

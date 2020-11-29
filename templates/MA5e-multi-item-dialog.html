@@ -1,0 +1,10 @@
+{{#each weapons}}
+<div class="MA5e-multi-item">
+        <img src="{{this.img}}">
+        <label for="{{this.id}}">{{this.data.name}}</label>
+        <input type="checkbox" class="dialog-checkbox" id="{{this.id}}" value="{{this.id}}">
+        <input type="text" class="inputMA5e" value="1">
+</div>
+{{/each}}
+<input type="checkbox" id="selectAll">
+<label for="selectAll">Select All</label>
