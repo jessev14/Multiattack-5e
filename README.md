@@ -28,7 +28,7 @@ Users can perform several attack / damage rolls at once, and the output is conde
 * (For GMs) select a single token
 * Click the Multiattack tool button in the token layer toolbar on the left
 * Check each item to be included in the roll and input how many of that item's attack/damage to roll (default 1)
-* Optional: Check the "Default" checkbox to save the entire multiattack roll configuration for subsequent attacks (default saved per token; will reset if new items are added to the character sheet)
+* Optional: Check the "Default" checkbox to save the entire multiattack roll configuration for subsequent attacks
 * Click the approprate roll button
 
 ## Incompatibilities*
