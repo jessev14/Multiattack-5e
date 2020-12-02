@@ -73,7 +73,7 @@ export async function multiattackTool() {
     async function rollMA(html) {
 
         const rollsArray = await getSelectedWeapons(html, "attack");
-        if (rollsArray === undefined) return null;
+        if (!rollsArray.length) return null;
         const attackTemplate = "modules/multiattack-5e/templates/MA5e-multi-item-attack-chat.html";
         const htmlContent = await renderTemplate(attackTemplate, { outerRolls: rollsArray })
         const messageData = {
@@ -107,7 +107,7 @@ export async function multiattackTool() {
     async function rollMADamage(html) {
 
         const rollsArray = await getSelectedWeapons(html, "damage");
-        if (rollsArray === undefined) return null;
+        if (!rollsArray.length) return null;
         let totalDamage = 0;
         rollsArray.forEach(outer => {
             outer.rolls.forEach(inner => {
