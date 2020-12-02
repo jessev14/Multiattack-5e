@@ -3,20 +3,83 @@
                 flex-direction: column;
         }
 </style>
-<form class="flexcol">
+<div class="flexcol">
         {{#each weapons}}
         <div class="MA5e-multi-item">
                 <label for="{{this.id}}"><img class="imgMA5e" src="{{this.img}}"></label>
                 <label for="{{this.id}}" class="labelMA5e">{{this.data.name}}</label>
                 <input type="text" class="inputMA5e" id="{{this.id}}input" placeholder="1"
-                        {{#if this.data.flags.multiattack-5e.check}}value="{{this.data.flags.multiattack-5e.count}}"{{/if}}>
-                <input type="checkbox" class="dialog-checkbox" name="weapons" id="{{this.id}}" value="{{this.id}}" {{#if this.data.flags.multiattack-5e.check}}checked{{/if}}>
+                        {{#if this.data.flags.multiattack-5e.check}}value="{{this.data.flags.multiattack-5e.count}}"
+                        {{/if}}>
+                <input type="checkbox" class="dialog-checkbox" name="weapons" id="{{this.id}}" value="{{this.id}}"
+                        {{#if this.data.flags.multiattack-5e.check}}checked{{/if}}>
         </div>
         {{/each}}
         <br>
         <div class="MA5e-multi-item-flex">
-                <input type="checkbox" id="multiDefault" {{#if defaultCheck}}checked{{/if}}><label
-                        for="multiDefault">Default</label>
+                <button class="buttonMA5e" id="setDefaultButton" onclick="setDefault()">Set Default</button>
+                <button class="buttonMA5e" id="clearDefaultButton" onclick="clearDefault()">Clear Default</button>
         </div>
         <br>
-</form>
+</div>
+
+<script>
+
+        async function setDefault() {
+                let character;
+                if (game.user.isGM) {
+                        if (canvas.tokens.controlled.length > 1 || canvas.tokens.controlled.length < 1) {
+                                ui.notifications.warn("Select a single token.");
+                                return null;
+                        } else {
+                                character = canvas.tokens.controlled[0].actor;
+                        }
+                } else {
+                        character = game.user.character;
+                }
+
+                const weaponsObject = document.getElementsByName("weapons");
+                let selectedWeapons = [];
+                for (let i = 0; i < weaponsObject.length; i++) {
+                        const weap = weaponsObject[i];
+                        if (weap.checked) {
+                                selectedWeapons.push({
+                                        id: weap.id,
+                                        count: document.getElementById(`${weap.id}input`).value > 0 ? document.getElementById(`${weap.id}input`).value : 1
+                                });
+                        }
+                }
+
+                await character.setFlag("multiattack-5e", "defaultTool", true);
+                await character.setFlag("multiattack-5e", "toolData", selectedWeapons);
+
+                ui.notifications.info("Default set.");
+        }
+
+        async function clearDefault() {
+                let character;
+                if (game.user.isGM) {
+                        if (canvas.tokens.controlled.length > 1 || canvas.tokens.controlled.length < 1) {
+                                ui.notifications.warn("Select a single token.");
+                                return null;
+                        } else {
+                                character = canvas.tokens.controlled[0].actor;
+                        }
+                } else {
+                        character = game.user.character;
+                }
+
+                const weaponsObject = document.getElementsByName("weapons");
+                weaponsObject.forEach(w => {
+                        w.checked = false;
+                        document.getElementById(`${w.id}input`).value = "";
+                });
+
+                await character.setFlag("multiattack-5e", "defaultTool", false);
+                await character.unsetFlag("multiattack-5e", "toolData");
+
+                ui.notifications.info("Default cleared.");
+        }
+
+
+</script>

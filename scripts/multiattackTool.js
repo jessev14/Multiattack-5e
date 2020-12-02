@@ -57,16 +57,7 @@ export async function multiattackTool() {
                 callback: async (html) => rollMADamage(html)
             }
         },
-        default: "rollMA",
-        close: async (html) => { // if defaultCheckbox, then re-declare character.data.flags.MA5e.defaultMARoll
-            if (html.find("#multiDefault")[0].checked) {
-                await character.setFlag("multiattack-5e", "defaultTool", true);
-                await character.setFlag("multiattack-5e", "toolData", await getSelectedWeapons(html));
-            } else {
-                await character.setFlag("multiattack-5e", "defaultTool", false);
-                await character.unsetFlag("multiattack-5e", "toolData");
-            }
-        }
+        default: "rollMA"
     }, dialogOptions).render(true);
 
 
@@ -102,6 +93,7 @@ export async function multiattackTool() {
         }
 
         ChatMessage.create(messageData);
+
     }
 
     async function rollMADamage(html) {
