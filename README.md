@@ -11,7 +11,7 @@ Users can perform several attack / damage rolls at once, and the output is conde
 <img src="/img/default.gif" width="295" height="667"/> <img src="/img/package-preview.png" width="295" height="667"/>
 
 ### Multiattack Tool
-<img src="/img/tool-preview.png>
+<img src="/img/tool-preview.png" width="590">
 
 
 ## Instructions
