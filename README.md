@@ -43,7 +43,7 @@ This roller is not compatible with other custom rollers (e.g. Better Rolls 5e) o
 However, this custom roller can be disabled (in the module settings) while maintaining the Multiattack tool in the token layer toolbar.
 The Multiattack tool is planned to be as openly compatible as possible, but is not compatible with the core default roller.
 
-Better Rolls 5e compatibility is currently in development (upcoming v3.1.0) and Midi-QOL compatibility will tentatively follow.
+Better Rolls 5e compatibility is currently in development (upcoming v3.2.0) and Midi-QOL compatibility will tentatively follow.
 
 ## Technical Information
 
@@ -86,6 +86,8 @@ Endless thanks to everyone in the official Foundry VTT Discord server as well as
 Ping me on Discord @enso#0361 if you have any questions, run into any problems/incompatibilities, or have any technical feedback you'd like to throw my way. This is my first module and my first real JavaScript project outside of some macros, so I'm sure there is tons of room for improvement.
 
 ## Changelog (see individual releases for full release notes)
+### v3.1.0
+* Improved implementation of saving default configuration in Multiattack tool
 ### v3.0.0
 * New Multiattack tool in token layer toolbar that allows for multiple attack rolls of different items to be made at once
 ### v2.2.0
