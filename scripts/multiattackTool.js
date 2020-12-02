@@ -41,7 +41,9 @@ export async function multiattackTool() {
     const dialogContent = await renderTemplate(dialogTemplate, { weapons: weapons, defaultCheck: character.getFlag("multiattack-5e", "defaultTool") });
     const dialogOptions = {
         id: "multiattack-tool-dialog",
-        width: 250
+        width: 250,
+        left: 120,
+        top: 200
     }
 
     new Dialog({
