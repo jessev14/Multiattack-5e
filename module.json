@@ -9,8 +9,9 @@
     "esmodules": [
         "./scripts/multiattack-5e.js",
         "./scripts/patches.js",
-        "./scripts/multi-item-attack.js",
-        "./scripts/compatibilityChecker.js"
+        "./scripts/multiattackTool.js",
+        "./scripts/compatibilityChecker.js",
+        "./scripts/settings.js"
     ],
     "systems": [
         "dnd5e"

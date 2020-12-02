@@ -3,7 +3,7 @@ export const compatibilityChecker = () => {
     // List to be updated manually as new modules release
     const incompatibleModules = [
         "betterrolls5e",
-        "midi=qol",
+        "midi-qol",
     ];
 
     let activeModules = [];

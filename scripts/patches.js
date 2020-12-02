@@ -3,7 +3,7 @@ export const coreRollerPatch = () => {
     game.dnd5e.entities.Item5e.prototype.rollDamage = rollDamageMA5e;
 };
 
-const blankRoll = new Roll("0").roll(); // straight from BR5e
+export const blankRoll = new Roll("0").roll(); // straight from BR5e
 
 const rollDialogTemplate = "modules/multiattack-5e/templates/MA5e-roll-dialog.html";
 
@@ -112,7 +112,7 @@ async function rollAttackMA5e(options = {}) {
             left: window.innerWidth - 710
         },
         messageData: { "flags.dnd5e.roll": { type: "attack", itemId: this.id } }
-    }, options);
+    }, options, { insertKeys: true });
     rollConfig.event = options.event;
 
     // Expanded critical hit thresholds
@@ -139,7 +139,7 @@ async function rollAttackMA5e(options = {}) {
     // Handle resource consumption if the attack roll was made
     const allowed = await this._handleResourceConsumption({ isCard: false, isAttack: true });
     if (allowed === false) return null;
-    //return roll;
+    return roll;
 }
 
 // Copied from d20Roll() and adds additional processing for more than a single attack roll
@@ -165,20 +165,6 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
 
         // Determine number of attack rolls to be made based on selection in dialog
         const numRolls = parseInt(form?.numRolls.value) || attackDefault;
-
-        // Determine if 'default' checkbox is checked
-        if (form) {
-            attackCheck = form.defaultCheckbox.checked;
-            if (attackCheck) {
-                attackNums[numRolls - 1].default = true;
-                attackDefault = numRolls;
-            } else {
-                attackNums.forEach(n => {
-                    n.default = false;
-                });
-                attackDefault = 1;
-            }
-        }
 
         // Determine the d20 roll and modifiers
         let nd = 1;
@@ -260,6 +246,23 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
 
     if (rolls === null) return null;
 
+    let rollsArray = await Promise.all(rolls.map(async r => {
+        if (r.results[0] >= r.terms[0].options.critical) {
+            r.crit = ' critical';
+        } else if (r.results[0] <= r.terms[0].options.fumble) {
+            r.crit = ' fumble';
+        } else {
+            r.crit = '';
+        }
+        r.tooltip = await r.getTooltip();
+        return r;
+    }));
+
+    if (!chatMessage) {
+        rolls[0].messageData = messageData;
+        return rolls[0];
+    };
+
     /*
     * If only a single roll, then use default toMessage() to generate chat card
     * Else, create chat message manually with custom template for multiple rolls
@@ -269,17 +272,7 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
         return rolls[0];
     } else {
 
-        let rollsArray = await Promise.all(rolls.map(async r => {
-            if (r.results[0] >= r.terms[0].options.critical) {
-                r.crit = ' critical';
-            } else if (r.results[0] <= r.terms[0].options.fumble) {
-                r.crit = ' fumble';
-            } else {
-                r.crit = '';
-            }
-            r.tooltip = await r.getTooltip();
-            return r;
-        }));
+
 
 
         // Use custom attackTemplate and data from rolls array to render html content for chat card
@@ -295,7 +288,8 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
         }, messageData);
 
         // Animate DSN for all rolls (await on last roll to have all animations finish before generating chat card)
-        if (game.dice3d) {
+        const customRollerSetting = game.settings.get("multiattack-5e","customRollerDSN");
+        if (game.dice3d && (customRollerSetting === "enabled" || customRollerSetting === "attackOnly")) {
             for (let i = 0; i < rolls.length; i++) {
                 if (i == rolls.length - 1) {
                     await game.dice3d.showForRoll(rolls[i]);
@@ -347,7 +341,22 @@ async function _d20RollDialogMA5e({ template, title, parts, data, rollMode, dial
                 }
             },
             default: "normal",
-            close: () => resolve(null)
+            close: html => {
+                // Determine if 'default' checkbox is checked
+                const checkValue = html.find("#defaultCheckbox")[0].checked;
+                const numRolls = html.find("[name=numRolls]")[0].value;
+                attackCheck = checkValue;
+                if (attackCheck) {
+                    attackNums[numRolls - 1].default = true;
+                    attackDefault = numRolls;
+                } else {
+                    attackNums.forEach(n => {
+                        n.default = false;
+                    });
+                    attackDefault = 1;
+                }
+                resolve(null);
+            }
         }, dialogOptions).render(true);
     });
 }
@@ -425,7 +434,8 @@ async function rollDamageMA5e({ event, spellLevel = null, versatile = false, opt
     }
 
     // Call the roll helper utility
-    return damageRollMA5e(mergeObject(rollConfig, options));
+    const roll = damageRollMA5e(mergeObject(rollConfig, options,{insertKeys: true}));
+    return roll;
 }
 
 // Copied from damageRoll() and adds additional processing for more than a single damage roll
@@ -444,20 +454,6 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
 
         // Determine number of attack rolls to be made based on selection in dialog
         const numRolls = parseInt(form?.numRolls.value) || hitDefault;
-
-        // Determine if 'default' checkbox is checked
-        if (form) {
-            hitCheck = form.defaultCheckbox.checked;
-            if (hitCheck) {
-                hitNums[numRolls - 1].default = true;
-                hitDefault = numRolls;
-            } else {
-                hitNums.forEach(n => {
-                    n.default = false;
-                });
-                hitDefault = 1;
-            }
-        }
 
         // Optionally include a situational bonus
         if (form) {
@@ -501,6 +497,16 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
 
     if (rolls === null) return null;
 
+    let rollsArray = await Promise.all(rolls.map(async r => {
+        r.tooltip = await r.getTooltip();
+        return r;
+    }));
+
+    if (!chatMessage) {
+        rolls[0].messageData = messageData;
+        return rolls[0];
+    };
+
     /*
     * If only a single roll, then use default toMessage() to generate chat card
     * Else, create chat message manually with custom template for multiple rolls
@@ -515,11 +521,6 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
         rolls.forEach(r => {
             totalDamage += r.total;
         });
-
-        let rollsArray = await Promise.all(rolls.map(async r => {
-            r.tooltip = await r.getTooltip();
-            return r;
-        }));
 
         // Add flag for use in damage application
         messageData["flags.MA5e.totalDamage"] = totalDamage;
@@ -537,7 +538,8 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
         }, messageData);
 
         // Animate DSN for all rolls (await on last roll to have all animations finish before generating chat card)
-        if (game.dice3d) {
+        const customRollerDSN = game.settings.get("multiattack-5e","customRollerDSN");
+        if (game.dice3d && (customRollerDSN === "enabled" || customRollerDSN === "damageOnly")) {
             for (let i = 0; i < rolls.length; i++) {
                 if (i == rolls.length - 1) {
                     await game.dice3d.showForRoll(rolls[i]);
@@ -586,7 +588,22 @@ async function _damageRollDialogMA5e({ template, title, parts, data, allowCritic
                 },
             },
             default: "normal",
-            close: () => resolve(null)
+            close: html => {
+                // Determine if 'default' checkbox is checked
+                const checkValue = html.find("#defaultCheckbox")[0].checked;
+                const numRolls = html.find("[name=numRolls]")[0].value;
+                hitCheck = checkValue;
+                if (hitCheck) {
+                    hitNums[numRolls - 1].default = true;
+                    hitDefault = numRolls;
+                } else {
+                    hitNums.forEach(n => {
+                        n.default = false;
+                    });
+                    hitDefault = 1;
+                }
+                resolve(null);
+            }
         }, dialogOptions).render(true);
     });
 }
@@ -599,7 +616,7 @@ async function _damageRollDialogMA5e({ template, title, parts, data, allowCritic
 export const addChatMessageContextOptionsMA5e = function (html, options) {
     let canApply = li => {
         const message = game.messages.get(li.data("messageId"));
-        return message.isRoll && message.isContentVisible && canvas.tokens.controlled.length;
+        return message.data.flags.MA5e?.multiItemAttack ? false : message.isRoll && message.isContentVisible && canvas.tokens.controlled.length;
     };
     options.push(
         {

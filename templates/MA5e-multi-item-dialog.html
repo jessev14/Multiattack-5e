@@ -1,10 +1,22 @@
-{{#each weapons}}
-<div class="MA5e-multi-item">
-        <img src="{{this.img}}">
-        <label for="{{this.id}}">{{this.data.name}}</label>
-        <input type="checkbox" class="dialog-checkbox" id="{{this.id}}" value="{{this.id}}">
-        <input type="text" class="inputMA5e" value="1">
-</div>
-{{/each}}
-<input type="checkbox" id="selectAll">
-<label for="selectAll">Select All</label>
+<style>
+        #multiattack-tool-dialog .dialog-buttons {
+                flex-direction: column;
+        }
+</style>
+<form class="flexcol">
+        {{#each weapons}}
+        <div class="MA5e-multi-item">
+                <label for="{{this.id}}"><img class="imgMA5e" src="{{this.img}}"></label>
+                <label for="{{this.id}}" class="labelMA5e">{{this.data.name}}</label>
+                <input type="text" class="inputMA5e" id="{{this.id}}input" placeholder="1"
+                        {{#if this.data.flags.multiattack-5e.check}}value="{{this.data.flags.multiattack-5e.count}}"{{/if}}>
+                <input type="checkbox" class="dialog-checkbox" name="weapons" id="{{this.id}}" value="{{this.id}}" {{#if this.data.flags.multiattack-5e.check}}checked{{/if}}>
+        </div>
+        {{/each}}
+        <br>
+        <div class="MA5e-multi-item-flex">
+                <input type="checkbox" id="multiDefault" {{#if defaultCheck}}checked{{/if}}><label
+                        for="multiDefault">Default</label>
+        </div>
+        <br>
+</form>

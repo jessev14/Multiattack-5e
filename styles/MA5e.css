@@ -12,16 +12,46 @@
     color: rgb(44, 42, 168);
 }
 
-.MA5e-multi-item > input[type=text].inputMA5e {
-    flex: 1;
+.MA5e-multi-item {
+    display: grid;
+    grid-template-columns: 30px 105px 60px 20px;
+    column-gap: 5px;
 }
 
-.MA5e-multi-item > input[type=checkbox].dialog-checkbox {
-    flex: 1;
-}
-
-.MA5e-multi-item > img {
+.MA5e-multi-item > label > img.imgMA5e {
     width: 30px;
     height: 30px;
     margin: 0px 5px 0px 0px;
+    border: none;
+
+    grid-column-start: 1;
+    grid-column-end: 2;
+    align-self: center;
 }
+
+.MA5e-multi-item > label.labelMA5e {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    align-self: center;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.MA5e-multi-item > input.inputMA5e {
+    grid-column-start: 3;
+    grid-column-end: 4;
+    align-self: center;
+}
+
+.MA5e-multi-item > input.dialog-checkbox {
+    grid-column-start: 4;
+    grid-column-end: 5;
+    align-self: center;
+}
+
+.MA5e-multi-item-flex {
+    display: flex;
+    align-items: center;
+} 
