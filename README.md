@@ -43,7 +43,7 @@ This roller is not compatible with other custom rollers (e.g. Better Rolls 5e) o
 However, this custom roller can be disabled (in the module settings) while maintaining the Multiattack tool in the token layer toolbar.
 The Multiattack tool is planned to be as openly compatible as possible, but is not compatible with the core default roller.
 
-Better Rolls 5e compatibility is currently in development (upcoming v3.2.0) and Midi-QOL compatibility will tentatively follow.
+Better Rolls 5e compatibility is currently in development (upcoming v3.2.0), and Midi-QOL compatibility will tentatively follow.
 
 ## Technical Information
 
@@ -75,9 +75,8 @@ Since this module was primarily designed for my own use, I intend to keep it and
 * ~~Private GM rolls~~ Added in v2.0.0
 * ~~Setting to set default number of rolls for attack / damage~~ Added in v2.1.2
 * ~~New workflow for attacking with different items in single multiattack action~~ Added in v3.0.0
-* "Damage" button on custom MA5e attack roll chat cards to streamline rolling damage
 * Better Rolls 5e compatibility
-* Localization with il18n (low priority; very few new strings)
+* "Damage" button on custom MA5e attack roll chat cards to streamline rolling damage
 
 ## Credits and Contact
 
