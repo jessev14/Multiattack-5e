@@ -66,11 +66,11 @@ async function rollAttackMA5e(options = {}) {
     let title = `${this.name} - ${game.i18n.localize("DND5E.AttackRoll")}`;
     const rollData = this.getRollData();
 
-    // Define Roll bonuses
-    const parts = [`@mod`];
-    if ((this.data.type !== "weapon") || itemData.proficient) {
-        parts.push("@prof");
-    }
+     // Define Roll bonuses
+     const parts = [`@mod`];
+     if ( !["weapon", "consumable"].includes(this.data.type) || itemData.proficient ) {
+       parts.push("@prof");
+     }
 
     // Attack Bonus
     if (itemData.attackBonus) parts.push(itemData.attackBonus);
@@ -79,22 +79,29 @@ async function rollAttackMA5e(options = {}) {
 
     // Ammunition Bonus
     delete this._ammo;
+    let ammo = null;
+    let ammoUpdate = null;
     const consume = itemData.consume;
-    if (consume?.type === "ammo") {
-        const ammo = this.actor.items.get(consume.target);
-        if (ammo?.data) {
-            const q = ammo.data.data.quantity;
-            const consumeAmount = consume.amount ?? 0;
-            if (q && (q - consumeAmount >= 0)) {
-                this._ammo = ammo;
-                let ammoBonus = ammo.data.data.attackBonus;
-                if (ammoBonus) {
-                    parts.push("@ammo");
-                    rollData["ammo"] = ammoBonus;
-                    title += ` [${ammo.name}]`;
-                }
-            }
+    if ( consume?.type === "ammo" ) {
+      ammo = this.actor.items.get(consume.target);
+      if(ammo?.data){
+        const q = ammo.data.data.quantity;
+        const consumeAmount = consume.amount ?? 0;
+        if ( q && (q - consumeAmount >= 0) ) {
+          this._ammo = ammo;
+          let ammoBonus = ammo.data.data.attackBonus;
+          if ( ammoBonus ) {
+            parts.push("@ammo");
+            rollData["ammo"] = ammoBonus;
+            title += ` [${ammo.name}]`;
+          }
         }
+      }
+
+      // Get pending ammunition update
+      const usage = this._getUsageUpdates({consumeResource: true});
+      if ( usage === false ) return null;
+      ammoUpdate = usage.resourceUpdates || {};
     }
 
     // Compose roll options
@@ -123,11 +130,11 @@ async function rollAttackMA5e(options = {}) {
     }
 
     // Elven Accuracy
-    if (["weapon", "spell"].includes(this.data.type)) {
+    if ( ["weapon", "spell"].includes(this.data.type) ) {
         if (flags.elvenAccuracy && ["dex", "int", "wis", "cha"].includes(this.abilityMod)) {
-            rollConfig.elvenAccuracy = true;
+          rollConfig.elvenAccuracy = true;
         }
-    }
+      }
 
     // Apply Halfling Lucky
     if (flags.halflingLucky) rollConfig.halflingLucky = true;
@@ -136,9 +143,8 @@ async function rollAttackMA5e(options = {}) {
     const roll = await d20RollMA5e(rollConfig);
     if (roll === false) return null;
 
-    // Handle resource consumption if the attack roll was made
-    const allowed = await this._handleResourceConsumption({ isCard: false, isAttack: true });
-    if (allowed === false) return null;
+    // Commit ammunition consumption on attack rolls resource consumption if the attack roll was made
+    if ( ammo && !isObjectEmpty(ammoUpdate) ) await ammo.update(ammoUpdate);
     return roll;
 }
 

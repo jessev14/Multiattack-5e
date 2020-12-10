@@ -3,15 +3,18 @@ import { blankRoll } from "/modules/multiattack-5e/scripts/patches.js";
 export async function multiattackTool() {
 
     let character;
+    let cName;
     if (game.user.isGM) {
         if (canvas.tokens.controlled.length > 1 || canvas.tokens.controlled.length < 1) {
             ui.notifications.warn("Select a single token.");
             return null;
         } else {
             character = canvas.tokens.controlled[0].actor;
+            cName = canvas.tokens.controlled[0].name;
         }
     } else {
         character = game.user.character;
+        cName = character.name;
     }
 
     const options = {
@@ -47,7 +50,7 @@ export async function multiattackTool() {
     }
 
     new Dialog({
-        title: `Multiattack - ${character.name}`,
+        title: `Multiattack - ${cName}`,
         content: dialogContent,
         buttons: {
             rollMA: {
