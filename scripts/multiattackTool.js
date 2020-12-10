@@ -32,6 +32,9 @@ export async function multiattackTool() {
             if (selected) {
                 await weapons[i].setFlag("multiattack-5e", "check", true);
                 await weapons[i].setFlag("multiattack-5e", "count", selected.count);
+            } else {
+                await weapons[i].setFlag("multiattack-5e", "check", false);
+                await weapons[i].unsetFlag("multiattack-5e", "count");
             }
         }
     } else {

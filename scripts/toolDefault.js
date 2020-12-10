@@ -1,16 +1,7 @@
 async function setDefault() {
-    let character;
-    if (game.user.isGM) {
-        if (canvas.tokens.controlled.length > 1 || canvas.tokens.controlled.length < 1) {
-            ui.notifications.warn("Select a single token.");
-            return null;
-        } else {
-            character = canvas.tokens.controlled[0].actor;
-        }
-    } else {
-        character = game.user.character;
-    }
-
+    const res = getChar();
+    const character = res[0];
+    const cName = res[1];
     const weaponsObject = document.getElementsByName("weapons");
     let selectedWeapons = [];
     for (let i = 0; i < weaponsObject.length; i++) {
@@ -24,24 +15,16 @@ async function setDefault() {
     }
 
     await character.setFlag("multiattack-5e", "defaultTool", true);
+    await character.unsetFlag("multiattack-5e", "toolData");
     await character.setFlag("multiattack-5e", "toolData", selectedWeapons);
 
-    ui.notifications.info(`Default set for ${character.name}.`);
+    ui.notifications.info(`Default set for ${cName}.`);
 }
 
 async function clearDefault() {
-    let character;
-    if (game.user.isGM) {
-        if (canvas.tokens.controlled.length > 1 || canvas.tokens.controlled.length < 1) {
-            ui.notifications.warn("Select a single token.");
-            return null;
-        } else {
-            character = canvas.tokens.controlled[0].actor;
-        }
-    } else {
-        character = game.user.character;
-    }
-
+    const res = getChar();
+    const character = res[0];
+    const cName = res[1];
     const weaponsObject = document.getElementsByName("weapons");
     weaponsObject.forEach(w => {
         w.checked = false;
@@ -51,7 +34,25 @@ async function clearDefault() {
     await character.setFlag("multiattack-5e", "defaultTool", false);
     await character.unsetFlag("multiattack-5e", "toolData");
 
-    ui.notifications.info(`Default cleared for ${character.name}.`);
+    ui.notifications.info(`Default cleared for ${cName}.`);
+}
+
+function getChar() {
+    let character;
+    let cName;
+    if (game.user.isGM) {
+        if (canvas.tokens.controlled.length > 1 || canvas.tokens.controlled.length < 1) {
+            ui.notifications.warn("Select a single token.");
+            return null;
+        } else {
+            character = canvas.tokens.controlled[0].actor;
+            cName = canvas.tokens.controlled[0].name;
+        }
+    } else {
+        character = game.user.character;
+        cName = character.name;
+    }
+    return [character, cName];
 }
 
 document.getElementById("setDefaultButton").onclick = setDefault;
