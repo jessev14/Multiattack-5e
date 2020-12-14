@@ -2,6 +2,12 @@ import { blankRoll } from "/modules/multiattack-5e/scripts/patches.js";
 
 export async function multiattackTool() {
 
+    let betterrolls5e = false;
+    game.modules.forEach(m => {
+        if (m.data.name === "betterrolls5e" && m.active) {
+            betterrolls5e = true;
+        }
+    });
     let character;
     let cName;
     if (game.user.isGM) {
@@ -72,7 +78,7 @@ export async function multiattackTool() {
     async function rollMA(html) {
 
         const rollsArray = await getSelectedWeapons(html, "attack");
-        if (!rollsArray.length) return null;
+        if (!rollsArray.length || rollsArray === null) return null;
         const attackTemplate = "modules/multiattack-5e/templates/MA5e-multi-item-attack-chat.html";
         const htmlContent = await renderTemplate(attackTemplate, { outerRolls: rollsArray })
         const messageData = {
@@ -163,28 +169,39 @@ export async function multiattackTool() {
         return selectedWeapons;
 
         async function buildRollsArray(selectedWeapons, rollType) {
-            let outerRollArray = await Promise.all(selectedWeapons.map(async (w) => {
-                const item = character.items.find(i => i.id === w.id);
-                let innerRollArray = [];
-                for (let i = 0; i < w.count; i++) {
-                    // BetterRolls.quickRollById(character.id, item.id); // use BR roller 
-                    // Hooks.once("midi-qol.RollComplete", () => item.roll());
-                    if (game.settings.get("multiattack-5e", "customRoller")) {
+            if (game.settings.get("multiattack-5e", "customRoller")) {
+                let outerRollArray = await Promise.all(selectedWeapons.map(async (w) => {
+                    const item = character.items.find(i => i.id === w.id);
+                    let innerRollArray = [];
+                    for (let i = 0; i < w.count; i++) {
+
+                        // Hooks.once("midi-qol.RollComplete", () => item.roll());
+
                         if (rollType === "attack") {
                             innerRollArray.push(await item.rollAttack(options));
                         } else if (rollType === "damage") {
                             innerRollArray.push(await item.rollDamage({ options: options }));
                         }
-                    }
-                }
-                return {
-                    flavor: innerRollArray[0].messageData.flavor,
-                    formula: innerRollArray[0].formula,
-                    rolls: innerRollArray
-                };
-            }));
 
-            return outerRollArray;
+                    }
+                    return {
+                        flavor: innerRollArray[0].messageData.flavor,
+                        formula: innerRollArray[0].formula,
+                        rolls: innerRollArray
+                    };
+                }));
+                return outerRollArray;
+            } else if (betterrolls5e) {
+                selectedWeapons.forEach(async (w) => {
+                    //game.dice3d.messageHookDisabled=true;
+                    const item = character.items.find(i => i.id === w.id);
+                    for (let i = 0; i < w.count; i++) {
+                        BetterRolls.quickRollById(character.id, item.id); // use BR roller
+                    }
+                });
+                //game.dice3d.messageHookDisabled=false;
+                return [];
+            }
         }
 
     }
