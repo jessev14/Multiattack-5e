@@ -43,7 +43,7 @@ This roller is not compatible with other custom rollers (e.g. Better Rolls 5e) o
 However, this custom roller can be disabled (in the module settings) while maintaining the Multiattack tool in the token layer toolbar.
 The Multiattack tool is planned to be as openly compatible as possible, but is not compatible with the core default roller.
 
-Better Rolls 5e compatibility is currently in development (upcoming v3.2.0), and Midi-QOL compatibility will tentatively follow.
+Better Rolls 5e is currently compatible, though some additional edits are in progress. Midi-QOL compatibility will tentatively follow.
 
 ## Technical Information
 
@@ -75,7 +75,7 @@ Since this module was primarily designed for my own use, I intend to keep it and
 * ~~Private GM rolls~~ Added in v2.0.0
 * ~~Setting to set default number of rolls for attack / damage~~ Added in v2.1.2
 * ~~New workflow for attacking with different items in single multiattack action~~ Added in v3.0.0
-* Better Rolls 5e compatibility
+* ~~Better Rolls 5e compatibility~~ Added in v.3.2.0
 * "Damage" button on custom MA5e attack roll chat cards to streamline rolling damage
 
 ## Credits and Contact
@@ -85,8 +85,10 @@ Endless thanks to everyone in the official Foundry VTT Discord server as well as
 Ping me on Discord @enso#0361 if you have any questions, run into any problems/incompatibilities, or have any technical feedback you'd like to throw my way. This is my first module and my first real JavaScript project outside of some macros, so I'm sure there is tons of room for improvement.
 
 ## Changelog (see individual releases for full release notes)
+### v3.2.0
+* Better Rolls 5e compatibility
 ### v3.1.2
-dnd5e v1.2.0 update
+* dnd5e v1.2.0 update
 ### v3.1.0
 * Improved implementation of saving default configuration in Multiattack tool
 ### v3.0.0
