@@ -85,6 +85,8 @@ Endless thanks to everyone in the official Foundry VTT Discord server as well as
 Ping me on Discord @enso#0361 if you have any questions, run into any problems/incompatibilities, or have any technical feedback you'd like to throw my way. This is my first module and my first real JavaScript project outside of some macros, so I'm sure there is tons of room for improvement.
 
 ## Changelog (see individual releases for full release notes)
+### v.3.2.1
+* Add setting to enable/disable DSN animations for Multiattack tool with Better Rolls 5e active
 ### v3.2.0
 * Better Rolls 5e compatibility
 ### v3.1.2
