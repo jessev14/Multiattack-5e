@@ -59,7 +59,7 @@ export function settingsInit() {
         }
     });
 
-    if (betterrolls5e) {
+    if (betterrolls5e && !game.settings.get("multiattack-5e", "customRoller")) {
         game.settings.register("multiattack-5e", "betterrollsDSN", {
             name: "Enable DSN for rolls made with Multiattack tool",
             hint: "Does not affect other rolls.",
