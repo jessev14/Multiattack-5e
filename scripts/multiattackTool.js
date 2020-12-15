@@ -58,19 +58,24 @@ export async function multiattackTool() {
         top: 200
     }
 
+    const buttons = {
+        rollMA: {
+            label: "Multiattack",
+            callback: async (html) => rollMA(html)
+        }
+    };
+
+    if (!betterrolls5e) {
+        buttons.rollDamage = {
+            label: "Damage",
+            callback: async (html) => rollMADamage(html)
+        };
+    }
+
     new Dialog({
         title: `Multiattack - ${cName}`,
         content: dialogContent,
-        buttons: {
-            rollMA: {
-                label: "Multiattack",
-                callback: async (html) => rollMA(html)
-            },
-            rollDamage: {
-                label: "Damage",
-                callback: async (html) => rollMADamage(html)
-            }
-        },
+        buttons: buttons,
         default: "rollMA"
     }, dialogOptions).render(true);
 
@@ -169,7 +174,7 @@ export async function multiattackTool() {
         return selectedWeapons;
 
         async function buildRollsArray(selectedWeapons, rollType) {
-            if (game.settings.get("multiattack-5e", "customRoller")) {
+            if (game.settings.get("multiattack-5e", "customRoller") && !betterrolls5e) {
                 let outerRollArray = await Promise.all(selectedWeapons.map(async (w) => {
                     const item = character.items.find(i => i.id === w.id);
                     let innerRollArray = [];
@@ -192,16 +197,37 @@ export async function multiattackTool() {
                 }));
                 return outerRollArray;
             } else if (betterrolls5e) {
+                if (!game.settings.get("multiattack-5e", "betterrollsDSN")) {
+                    let count = game.messages.entities.length;
+                    selectedWeapons.forEach(w => {
+                        for (let i = 0; i < w.count; i++) {
+                            count++;
+                        }
+                    });
+                    const DSNOffHook = Hooks.on("diceSoNiceRollStart", (messageID, context) => {
+                        context.blind = true;
+                    });
+                    const DSNOffHook2 = Hooks.on("diceSoNiceRollComplete", () => {
+                        console.log(`current: ${game.messages.entities.length}`);
+                        console.log(`end: ${count}`);
+                        if (game.messages.entities.length >= count) { 
+                            console.log("in hook");
+                            Hooks.off("diceSoNiceRollStart", DSNOffHook);
+                            Hooks.off("diceSoNiceRollComplete", DSNOffHook2);
+                        }
+                    });
+                }
                 selectedWeapons.forEach(async (w) => {
-                    //game.dice3d.messageHookDisabled=true;
                     const item = character.items.find(i => i.id === w.id);
                     for (let i = 0; i < w.count; i++) {
                         BetterRolls.quickRollById(character.id, item.id); // use BR roller
                     }
                 });
-                //game.dice3d.messageHookDisabled=false;
+                
                 return [];
             }
+
+            
         }
 
     }
