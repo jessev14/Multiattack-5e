@@ -34,16 +34,16 @@ Users can perform several attack / damage rolls at once, and the output is conde
 ## Incompatibilities*
 
 * Midi-QOL
+* Better Rolls for 5e
+* Mars 5e - Moerills alternative rolling style
 * Smooth Combat
-* Better Rolls 5e
 
 *MA5e includes a custom "roller" that can be used to handle multiple rolls (see Demo).
 This roller is not compatible with other custom rollers (e.g. Better Rolls 5e) or combat automation modules (e.g. Midi-QOL).
 
-However, this custom roller can be disabled (in the module settings) while maintaining the Multiattack tool in the token layer toolbar.
-The Multiattack tool is planned to be as openly compatible as possible, but is not compatible with the core default roller.
+However, this custom roller can be disabled (in the module settings) while maintaining the Multiattack Tool in the token layer toolbar. The Multiattack Tool is planned to be as openly compatible as possible, but is not compatible with the core default roller.
 
-Better Rolls 5e is currently compatible, though some additional edits are in progress. Midi-QOL compatibility will tentatively follow.
+Better Rolls 5e is currently compatible and Midi-QOL compatibility will tentatively follow. Mars 5e will be considered after implementing Midi-QOL compatibility.
 
 ## Technical Information
 
