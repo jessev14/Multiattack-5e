@@ -47,11 +47,14 @@ Better Rolls 5e is currently compatible, though some additional edits are in pro
 
 ## Technical Information
 
+### MA5e Custom Roller
+
 The custom MA5e roller overrides:
+#### dnd5e/module/item/entity.js
 * Item5e.prototype.rollAttack
 * Item5e.prototype.rollDamage
 
-with the following patched helper functions (locally re-defined in patches.js):
+with the following patched helper functions (locally re-defined in override.js):
 #### dnd5e/module/dice.js
 * d20Roll
 * _d20RollDialog
@@ -61,14 +64,27 @@ with the following patched helper functions (locally re-defined in patches.js):
 * addChatMessageContextOptions
 * applyChatCardDamage
 
-Changes to the above functions in future core/system updates may result in MA5e behaving differently than the rest of the system (or breaking entirely). Some changes are extremely minor, so calls to the original functions may be implemented in a future release to add some protection from the module breaking between updates.
+The overriden functions are copy and pasted directly from entity.js and are only there to redirect the helper function calls to the locally-defined patched versions in override.js.
 
-The Multiattack tool by default relies on the custom MA5e roller, but implementation wise, it just calls Item5e.rollAttack / Item5e.rollDamage. This allows the tool to be compatible with other modules that override those functions (as long as the MA5e roller is disabled in settings).
+d20Roll and damageRoll are patched to implement new rolling logic which can handle performing and returning an array of multiple rolls rather than just a single roll.
 
-The Multiattack tool dialog window is populated with selected token's owned weapons that have attacks.
-If the "Default" checkbox is checked, then on closing of the dialog (either by the close button or by the roll buttons) a flag will be created in the token's actor that will be used to autofill the dialog based on the existing input when the dialog window closes. This flag will be deleted if the checkbox is unchecked.
+_d20RollDialog and _damageRollDialog are only changed to use the custom template that includes an additional select element to indicate the number of rolls to make. Ideally, patching these private methods could be avoided by just patching the HTML template they point to by default, but I have not yet been able to figure out the logistics of this approach (i.e. how to override the HTML template).
 
-Since this module was primarily designed for my own use, I intend to keep it and this repository up to date. However, it's a personal rule of mine to not perform any core / system updates until after my next session (currently every other week). I can't guarantee immediate updates, but I believe the update process will be straightforward enough that it should not take more than a few days once I begin.
+### Multiattack Tool
+
+The Multiattack Tool is bascially just a heavy duty macro that prompts the user to select the weapons to roll and input how many times to roll each weapon. The dialog box is automatically populated from the selected actor's weapon items that have attacks. Default selections can be saved/cleared via buttons on the dialog that set/unset a flag on the actor.
+
+The selected weapons are rolled using different logic based on whether certain modules are active. If neither Better Rolls 5e nor Midi-QOL are active, then the custom roller described above is used; basically just calling Item5e.rollAttack / Item5e.rollDamage in a loop. The rolls data are collected behind the scenes and used to generate a custom chat card.
+
+If Better Rolls 5e is active, then the Multiattack Tool uses the Better Rolls custom roller to roll the weapons; basically just calling BetterRolls.quickRollById in a loop. It may be possible to collect the rolls data and generate a custom chat card for these rolls as well, but in my opinion, Better Rolls 5e already does a fantastic job of streamlining roll information so I don't feel that this is necessary. However, feel free to submit an issue if you feel otherwise.
+
+This approach will more or less be the approach taken with Midi-QOL compatibility, which at time of writing is still being developed.
+
+### Dice So Nice!
+
+Since the number of rolls being made could be quite large, there are world-scope settings that allow for GM users to enable/disable DSN animations. If using the MA5e custom roller, DSN animations can be enabled/disabled for attack rolls or damage rolls or both. This can be set independently for rolls made using the attack/damage chat card buttons or with the Multiattack Tool.
+
+For Better Rolls 5e users, since attack and damage rolls are made simultaneously, the only option is to enable or disable DSN animations entirely (for rolls made using the Multiattack Tool; other rolls are not effected).
 
 ## Future Implementations 
 
@@ -76,6 +92,7 @@ Since this module was primarily designed for my own use, I intend to keep it and
 * ~~Setting to set default number of rolls for attack / damage~~ Added in v2.1.2
 * ~~New workflow for attacking with different items in single multiattack action~~ Added in v3.0.0
 * ~~Better Rolls 5e compatibility~~ Added in v.3.2.0
+* Midi-QOL compatibility
 * "Damage" button on custom MA5e attack roll chat cards to streamline rolling damage
 
 ## Credits and Contact
@@ -85,6 +102,9 @@ Endless thanks to everyone in the official Foundry VTT Discord server as well as
 Ping me on Discord @enso#0361 if you have any questions, run into any problems/incompatibilities, or have any technical feedback you'd like to throw my way. This is my first module and my first real JavaScript project outside of some macros, so I'm sure there is tons of room for improvement.
 
 ## Changelog (see individual releases for full release notes)
+### v4.0.0
+* Foundry VTT Core update 0.7.9
+* Complete package re-write (no functional changes)
 ### v.3.2.1
 * Add setting to enable/disable DSN animations for Multiattack tool with Better Rolls 5e active
 ### v3.2.0
