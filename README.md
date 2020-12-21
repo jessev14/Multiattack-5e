@@ -43,7 +43,7 @@ This roller is not compatible with other custom rollers (e.g. Better Rolls 5e) o
 
 However, this custom roller can be disabled (in the module settings) while maintaining the Multiattack Tool in the token layer toolbar. The Multiattack Tool is planned to be as openly compatible as possible, but is not compatible with the core default roller.
 
-Better Rolls 5e is currently compatible and basic Midi-QOL compatibility is implemented, though still requires some testing and  . Mars 5e will be considered after implementing Midi-QOL compatibility.
+Better Rolls 5e is currently compatible and basic Midi-QOL compatibility is implemented, though still requires some testing and fine tuning. Mars 5e will be considered after implementing Midi-QOL compatibility.
 
 ## Technical Information
 
@@ -72,16 +72,16 @@ _d20RollDialog and _damageRollDialog are only changed to use the custom template
 
 ### Multiattack Tool
 
-The Multiattack Tool is bascially just a heavy duty macro that prompts the user to select the weapons to roll and input how many times to roll each weapon. The dialog box is automatically populated from the selected actor's weapon items that have attacks. Default selections can be saved/cleared via buttons on the dialog that set/unset a flag on the actor.
+The Multiattack Tool is basically just a heavy duty macro that prompts the user to select the weapons to roll and input how many times to roll each weapon. The dialog box is automatically populated from the selected actor's weapon items that have attacks. Default selections can be saved/cleared via buttons on the dialog that set/unset a flag on the actor.
 
 #### MA5e Custom Roller
 The selected weapons are rolled using different logic based on whether certain modules are active. If neither Better Rolls 5e nor Midi-QOL are active, then the custom roller described above is used; basically just calling Item5e.rollAttack / Item5e.rollDamage in a loop. The rolls data are collected behind the scenes and used to generate a custom chat card.
 
-### Better Rolls for 5e
+#### Better Rolls for 5e
 If Better Rolls for 5e is active, then the Multiattack Tool uses the Better Rolls custom roller to roll the weapons; basically just calling BetterRolls.quickRollById in a loop. It may be possible to collect the rolls data and generate a custom chat card for these rolls as well, but in my opinion, Better Rolls 5e already does a fantastic job of streamlining roll information so I don't feel that this is necessary. However, feel free to submit an issue if you feel otherwise.
 
-### Midi-QOL
-If Midi-QOL is active, then the Multiattack Tool performs an initial item roll using the first item in the Multiattack Roll. Prior to this inital roll, MA5e creates a hook on "midi-qol.RollComplete" with an anonymous callback function that rolls the next item. Once all items are rolled (determined by incrementing a counter), the hook is removed.
+#### Midi-QOL
+If Midi-QOL is active, then the Multiattack Tool performs an initial item roll using the first item in the Multiattack Roll. Prior to this inital roll, MA5e creates a hook on "midi-qol.RollComplete" with an anonymous callback function that rolls the next item. The hook is (supposedly) called at the end of a Midi-QOL workflow, and so essentially the next item roll is not initiated until the previous once is completed. Once all items are rolled (determined by an incrementing counter), the hook is removed.
 
 ### Dice So Nice!
 
