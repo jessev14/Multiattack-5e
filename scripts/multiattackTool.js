@@ -225,7 +225,9 @@ async function multiattackTool() {
     }
 
     async function midiMA5e(html) {
-        await game.settings.set("dice-so-nice", "enabled", false);
+        if (game.dice3d) {
+            await game.settings.set("dice-so-nice", "enabled", false);
+        }
         const selectedWeapons = await rollSelectedWeapons(html);
         let count = 0;
         let endCount = 0;
@@ -240,7 +242,9 @@ async function multiattackTool() {
         });
         const rollCompleteHook = Hooks.on('midi-qol.RollComplete', async () => {
             if (count === endCount - 1) {
-                await game.settings.set("dice-so-nice", "enabled", true);
+                if (game.dice3d) {
+                    await game.settings.set("dice-so-nice", "enabled", true);
+                }
                 return Hooks.off('midi-qol.RollComplete', rollCompleteHook);
             }
             count++
