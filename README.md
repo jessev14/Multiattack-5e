@@ -87,7 +87,7 @@ If Midi-QOL is active, then the Multiattack Tool performs an initial item roll u
 
 Since the number of rolls being made could be quite large, there are world-scope settings that allow for GM users to enable/disable DSN animations. If using the MA5e custom roller, DSN animations can be enabled/disabled for attack rolls or damage rolls or both. This can be set independently for rolls made using the attack/damage chat card buttons or with the Multiattack Tool.
 
-For Better Rolls 5e users, since attack and damage rolls are made simultaneously, the only option is to enable or disable DSN animations entirely (for rolls made using the Multiattack Tool; other rolls are not effected).
+For Better Rolls 5e users, since attack and damage rolls are made simultaneously, the only option is to enable or disable DSN animations entirely (for rolls made using the Multiattack Tool only; other rolls are not effected).
 
 ## Future Implementations 
 
