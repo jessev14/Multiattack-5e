@@ -32,7 +32,7 @@ async function multiattackTool() {
         cName = character.name;
     }
 
-    
+
 
     const dialogTemplate = "modules/multiattack-5e/templates/MA5e-multi-item-dialog.html";
     let weapons = character.items.filter(i => i.hasAttack && i.data.type === "weapon");
@@ -85,8 +85,8 @@ async function multiattackTool() {
 
 
     async function rollMA(html) {
+        if (moduleCompatibility.midi) return midiMA5e(html);
         if (moduleCompatibility.betterrolls) return betterRollsMA5e(html);
-        //if (moduleCompatibility.midi) return midiMA5e();
 
         const rollsArray = await rollSelectedWeapons(html, "attack");
         if (!rollsArray.length) return null;
@@ -144,10 +144,10 @@ async function multiattackTool() {
         ChatMessage.create(messageData);
     }
 
-    async function rollSelectedWeapons(html, rollType) {
+    async function rollSelectedWeapons(html, rollType = null) {
         const weaponsObject = html.find("[name=weapons]");
         const selectedWeapons = [];
-        for (let i = 0 ; i < weaponsObject.length; i++) {
+        for (let i = 0; i < weaponsObject.length; i++) {
             const w = weaponsObject[i];
             if (w.checked) {
                 selectedWeapons.push({
@@ -157,7 +157,7 @@ async function multiattackTool() {
             }
         }
 
-        if (rollType === "betterRolls") return selectedWeapons;
+        if (rollType === null) return selectedWeapons;
 
         const options = {
             fastForward: true,
@@ -171,7 +171,7 @@ async function multiattackTool() {
                 if (rollType === "attack") {
                     innerRollArray.push(await item.rollAttack(options));
                 } else if (rollType === "damage") {
-                    innerRollArray.push(await item.rollDamage({event: {}, options: options}));
+                    innerRollArray.push(await item.rollDamage({ event: {}, options: options }));
                 }
             }
             outerRollArray.push({
@@ -184,19 +184,21 @@ async function multiattackTool() {
         return outerRollArray;
     }
 
-    async function renderDSN(rollsArray) {{
-        for (let i = 0; i < rollsArray.length; i++) {
-            for (let j = 0; j < rollsArray[i].rolls.length; j++)
-                if (j === rollsArray[i].rolls.length - 1 && i === rollsArray.length - 1) {
-                    await game.dice3d.showForRoll(rollsArray[i].rolls[j]);
-                } else {
-                    game.dice3d.showForRoll(rollsArray[i].rolls[j]);
-                }
+    async function renderDSN(rollsArray) {
+        {
+            for (let i = 0; i < rollsArray.length; i++) {
+                for (let j = 0; j < rollsArray[i].rolls.length; j++)
+                    if (j === rollsArray[i].rolls.length - 1 && i === rollsArray.length - 1) {
+                        await game.dice3d.showForRoll(rollsArray[i].rolls[j]);
+                    } else {
+                        game.dice3d.showForRoll(rollsArray[i].rolls[j]);
+                    }
+            }
         }
-    }}
+    }
 
     async function betterRollsMA5e(html) {
-        const selectedWeapons = await rollSelectedWeapons(html, "betterRolls");
+        const selectedWeapons = await rollSelectedWeapons(html);
         if (!game.settings.get("multiattack-5e", "betterrollsDSN")) {
             let count = game.messages.entities.length;
             selectedWeapons.forEach(w => {
@@ -208,7 +210,7 @@ async function multiattackTool() {
                 context.blind = true;
             });
             const rollCompleteHook = Hooks.on("diceSoNiceRollComplete", () => {
-                if (game.messages.entities.length >= count) { 
+                if (game.messages.entities.length >= count) {
                     Hooks.off("diceSoNiceRollStart", rollStartHook);
                     Hooks.off("diceSoNiceRollComplete", rollCompleteHook);
                 }
@@ -220,5 +222,30 @@ async function multiattackTool() {
                 BetterRolls.quickRollById(character.id, item.id);
             }
         });
+    }
+
+    async function midiMA5e(html) {
+        await game.settings.set("dice-so-nice", "enabled", false);
+        const selectedWeapons = await rollSelectedWeapons(html);
+        let count = 0;
+        let endCount = 0;
+        const selectedWeaponsArray = [];
+        selectedWeapons.forEach(w => {
+            for (let i = 0; i < w.count; i++) {
+                endCount++;
+                selectedWeaponsArray.push(
+                    character.items.get(w.id)
+                );
+            }
+        });
+        const rollCompleteHook = Hooks.on('midi-qol.RollComplete', async () => {
+            if (count === endCount - 1) {
+                await game.settings.set("dice-so-nice", "enabled", true);
+                return Hooks.off('midi-qol.RollComplete', rollCompleteHook);
+            }
+            count++
+            selectedWeaponsArray[count].roll();
+        });
+        selectedWeaponsArray[0].roll();
     }
 }
