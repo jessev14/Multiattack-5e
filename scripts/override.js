@@ -9,7 +9,7 @@ export const coreRollerPatch = () => {
 }
 export const blankRoll = new Roll("0").evaluate(); // straight from BR5e
 
-const rollDialogTemplate = "modules/ma5e-rewrite/templates/MA5e-roll-dialog.html";
+const rollDialogTemplate = "modules/multiattack-5e/templates/MA5e-roll-dialog.html";
 
 const attackDefault = {
     default: 1,

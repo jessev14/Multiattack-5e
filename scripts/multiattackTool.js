@@ -240,7 +240,7 @@ async function multiattackTool() {
                 );
             }
         });
-        const rollCompleteHook = Hooks.on('midi-qol.RollComplete', async () => {
+        const rollCompleteHook = Hooks.on("midi-qol.RollComplete", async () => {
             if (count === endCount - 1) {
                 if (game.dice3d) {
                     await game.settings.set("dice-so-nice", "enabled", true);
