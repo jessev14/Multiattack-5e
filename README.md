@@ -104,4 +104,4 @@ Endless thanks to everyone in the official Foundry VTT Discord server as well as
 
 Ping me on Discord @enso#0361 if you have any questions, run into any problems/incompatibilities, or have any technical feedback you'd like to throw my way. This is my first module and my first real JavaScript project outside of some macros, so I'm sure there is tons of room for improvement.
 
-## Changelog (see individual releases for full release notes)
+## [Changelog (see individual releases for full release notes)](https://github.com/jessev14/Multiattack-5e/blob/main/CHANGELOG.md)
