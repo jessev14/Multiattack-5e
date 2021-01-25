@@ -56,96 +56,82 @@ const damageDefault = {
 
 // Patch Item5e.rollAttack() to call d20RollMA5e()
 // No other changes, can copy and paste directly from item/entity.js after future dnd5e updates
-async function rollAttackMA5e(options={}) {
+async function rollAttackMA5e(options = {}) {
     const itemData = this.data.data;
-    const actorData = this.actor.data.data;
     const flags = this.actor.data.flags.dnd5e || {};
-    if ( !this.hasAttack ) {
-      throw new Error("You may not place an Attack Roll with this Item.");
+    if (!this.hasAttack) {
+        throw new Error("You may not place an Attack Roll with this Item.");
     }
     let title = `${this.name} - ${game.i18n.localize("DND5E.AttackRoll")}`;
-    const rollData = this.getRollData();
 
-    // Define Roll bonuses
-    const parts = [`@mod`];
-    if ( !["weapon", "consumable"].includes(this.data.type) || itemData.proficient ) {
-      parts.push("@prof");
-    }
+    // get the parts and rollData for this item's attack
+    const { parts, rollData } = this.getAttackToHit();
 
-    // Attack Bonus
-    if ( itemData.attackBonus ) parts.push(itemData.attackBonus);
-    const actorBonus = actorData?.bonuses?.[itemData.actionType] || {};
-    if ( actorBonus.attack ) parts.push(actorBonus.attack);
-
-    // Ammunition Bonus
+    // Handle ammunition consumption
     delete this._ammo;
     let ammo = null;
     let ammoUpdate = null;
     const consume = itemData.consume;
-    if ( consume?.type === "ammo" ) {
-      ammo = this.actor.items.get(consume.target);
-      if(ammo?.data){
-        const q = ammo.data.data.quantity;
-        const consumeAmount = consume.amount ?? 0;
-        if ( q && (q - consumeAmount >= 0) ) {
-          this._ammo = ammo;
-          let ammoBonus = ammo.data.data.attackBonus;
-          if ( ammoBonus ) {
-            parts.push("@ammo");
-            rollData["ammo"] = ammoBonus;
-            title += ` [${ammo.name}]`;
-          }
+    if (consume?.type === "ammo") {
+        ammo = this.actor.items.get(consume.target);
+        if (ammo?.data) {
+            const q = ammo.data.data.quantity;
+            const consumeAmount = consume.amount ?? 0;
+            if (q && (q - consumeAmount >= 0)) {
+                this._ammo = ammo;
+                title += ` [${ammo.name}]`;
+            }
         }
-      }
 
-      // Get pending ammunition update
-      const usage = this._getUsageUpdates({consumeResource: true});
-      if ( usage === false ) return null;
-      ammoUpdate = usage.resourceUpdates || {};
+        // Get pending ammunition update
+        const usage = this._getUsageUpdates({ consumeResource: true });
+        if (usage === false) return null;
+        ammoUpdate = usage.resourceUpdates || {};
     }
 
     // Compose roll options
     const rollConfig = mergeObject({
-      parts: parts,
-      actor: this.actor,
-      data: rollData,
-      title: title,
-      flavor: title,
-      speaker: ChatMessage.getSpeaker({actor: this.actor}),
-      dialogOptions: {
-        width: 400,
-        top: options.event ? options.event.clientY - 80 : null,
-        left: window.innerWidth - 710
-      },
-      messageData: {"flags.dnd5e.roll": {type: "attack", itemId: this.id }}
+        parts: parts,
+        actor: this.actor,
+        data: rollData,
+        title: title,
+        flavor: title,
+        speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+        dialogOptions: {
+            width: 400,
+            top: options.event ? options.event.clientY - 80 : null,
+            left: window.innerWidth - 710
+        },
+        messageData: { "flags.dnd5e.roll": { type: "attack", itemId: this.id } }
     }, options);
     rollConfig.event = options.event;
 
     // Expanded critical hit thresholds
-    if (( this.data.type === "weapon" ) && flags.weaponCriticalThreshold) {
-      rollConfig.critical = parseInt(flags.weaponCriticalThreshold);
-    } else if (( this.data.type === "spell" ) && flags.spellCriticalThreshold) {
-      rollConfig.critical = parseInt(flags.spellCriticalThreshold);
+    if ((this.data.type === "weapon") && flags.weaponCriticalThreshold) {
+        rollConfig.critical = parseInt(flags.weaponCriticalThreshold);
+    } else if ((this.data.type === "spell") && flags.spellCriticalThreshold) {
+        rollConfig.critical = parseInt(flags.spellCriticalThreshold);
     }
 
     // Elven Accuracy
-    if ( ["weapon", "spell"].includes(this.data.type) ) {
-      if (flags.elvenAccuracy && ["dex", "int", "wis", "cha"].includes(this.abilityMod)) {
-        rollConfig.elvenAccuracy = true;
-      }
+    if (["weapon", "spell"].includes(this.data.type)) {
+        if (flags.elvenAccuracy && ["dex", "int", "wis", "cha"].includes(this.abilityMod)) {
+            rollConfig.elvenAccuracy = true;
+        }
     }
 
     // Apply Halfling Lucky
-    if ( flags.halflingLucky ) rollConfig.halflingLucky = true;
+    if (flags.halflingLucky) rollConfig.halflingLucky = true;
 
     // Invoke the d20 roll helper
     const roll = await d20RollMA5e(rollConfig);
-    if ( roll === false ) return null;
+    if (roll === false) return null;
 
     // Commit ammunition consumption on attack rolls resource consumption if the attack roll was made
-    if ( ammo && !isObjectEmpty(ammoUpdate) ) await ammo.update(ammoUpdate);
+    if (ammo && !isObjectEmpty(ammoUpdate)) await ammo.update(ammoUpdate);
     return roll;
 }
+
 // Changed inner roll function to handle multiple rolls
 async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null, template = null, title = null, speaker = null, flavor = null, fastForward = null, dialogOptions, advantage = null, disadvantage = null, critical = 20, fumble = 1, targetValue = null, elvenAccuracy = false, halflingLucky = false, reliableTalent = false, chatMessage = true, messageData = {} } = {}) {
     // Prepare Message Data
@@ -160,8 +146,8 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
     let adv = 0;
     fastForward = fastForward ?? (event && (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey));
     if (fastForward) {
-        if (advantage || event.altKey) adv = 1;
-        else if (disadvantage || event.ctrlKey || event.metaKey) adv = -1;
+        if (advantage ?? event.altKey) adv = 1;
+        else if (disadvantage ?? (event.ctrlKey || event.metaKey)) adv = -1;
     }
 
     // Define the inner roll function
@@ -289,7 +275,7 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
         }, messageData);
 
         // Animate DSN for all rolls (await on last roll to have all animations finish before generating chat card)
-        const customRollerSetting = game.settings.get("multiattack-5e","customRollerDSN");
+        const customRollerSetting = game.settings.get("multiattack-5e", "customRollerDSN");
         if (game.dice3d && (customRollerSetting === "enabled" || customRollerSetting === "attackOnly")) {
             for (let i = 0; i < rolls.length; i++) {
                 if (i == rolls.length - 1) {
@@ -363,72 +349,73 @@ async function _d20RollDialogMA5e({ template, title, parts, data, rollMode, dial
 
 // Patch Item5e.rollDamage() to call damageRollMA5e()
 // No other changes, can copy and paste directly from item/entity.js after future dnd5e updates
-function rollDamageMA5e({critical=false, event=null, spellLevel=null, versatile=false, options={}}={}) {
-    if ( !this.hasDamage ) throw new Error("You may not make a Damage Roll with this Item.");
+function rollDamageMA5e({ critical = false, event = null, spellLevel = null, versatile = false, options = {} } = {}) {
+    if (!this.hasDamage) throw new Error("You may not make a Damage Roll with this Item.");
     const itemData = this.data.data;
     const actorData = this.actor.data.data;
-    const messageData = {"flags.dnd5e.roll": {type: "damage", itemId: this.id }};
+    const messageData = { "flags.dnd5e.roll": { type: "damage", itemId: this.id } };
 
     // Get roll data
     const parts = itemData.damage.parts.map(d => d[0]);
     const rollData = this.getRollData();
-    if ( spellLevel ) rollData.item.level = spellLevel;
+    if (spellLevel) rollData.item.level = spellLevel;
 
     // Configure the damage roll
-    const title = `${this.name} - ${game.i18n.localize("DND5E.DamageRoll")}`;
+    const actionFlavor = game.i18n.localize(itemData.actionType === "heal" ? "DND5E.Healing" : "DND5E.DamageRoll");
+    const title = `${this.name} - ${actionFlavor}`;
     const rollConfig = {
-      actor: this.actor,
-      critical: critical ?? event?.altKey ?? false,
-      data: rollData,
-      event: event,
-      fastForward: event ? event.shiftKey || event.altKey || event.ctrlKey || event.metaKey : false,
-      parts: parts,
-      title: title,
-      flavor: this.labels.damageTypes.length ? `${title} (${this.labels.damageTypes})` : title,
-      speaker: ChatMessage.getSpeaker({actor: this.actor}),
-      dialogOptions: {
-        width: 400,
-        top: event ? event.clientY - 80 : null,
-        left: window.innerWidth - 710
-      },
-      messageData: messageData
+        actor: this.actor,
+        critical: critical ?? event?.altKey ?? false,
+        data: rollData,
+        event: event,
+        fastForward: event ? event.shiftKey || event.altKey || event.ctrlKey || event.metaKey : false,
+        parts: parts,
+        title: title,
+        flavor: this.labels.damageTypes.length ? `${title} (${this.labels.damageTypes})` : title,
+        speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+        dialogOptions: {
+            width: 400,
+            top: event ? event.clientY - 80 : null,
+            left: window.innerWidth - 710
+        },
+        messageData: messageData
     };
 
     // Adjust damage from versatile usage
-    if ( versatile && itemData.damage.versatile ) {
-      parts[0] = itemData.damage.versatile;
-      messageData["flags.dnd5e.roll"].versatile = true;
+    if (versatile && itemData.damage.versatile) {
+        parts[0] = itemData.damage.versatile;
+        messageData["flags.dnd5e.roll"].versatile = true;
     }
 
     // Scale damage from up-casting spells
-    if ( (this.data.type === "spell") ) {
-      if ( (itemData.scaling.mode === "cantrip") ) {
-        const level = this.actor.data.type === "character" ? actorData.details.level : actorData.details.spellLevel;
-        this._scaleCantripDamage(parts, itemData.scaling.formula, level, rollData);
-      }
-      else if ( spellLevel && (itemData.scaling.mode === "level") && itemData.scaling.formula ) {
-        const scaling = itemData.scaling.formula;
-        this._scaleSpellDamage(parts, itemData.level, spellLevel, scaling, rollData);
-      }
+    if ((this.data.type === "spell")) {
+        if ((itemData.scaling.mode === "cantrip")) {
+            const level = this.actor.data.type === "character" ? actorData.details.level : actorData.details.spellLevel;
+            this._scaleCantripDamage(parts, itemData.scaling.formula, level, rollData);
+        }
+        else if (spellLevel && (itemData.scaling.mode === "level") && itemData.scaling.formula) {
+            const scaling = itemData.scaling.formula;
+            this._scaleSpellDamage(parts, itemData.level, spellLevel, scaling, rollData);
+        }
     }
 
     // Add damage bonus formula
     const actorBonus = getProperty(actorData, `bonuses.${itemData.actionType}`) || {};
-    if ( actorBonus.damage && (parseInt(actorBonus.damage) !== 0) ) {
-      parts.push(actorBonus.damage);
+    if (actorBonus.damage && (parseInt(actorBonus.damage) !== 0)) {
+        parts.push(actorBonus.damage);
     }
 
     // Add ammunition damage
-    if ( this._ammo ) {
-      parts.push("@ammo");
-      rollData["ammo"] = this._ammo.data.data.damage.parts.map(p => p[0]).join("+");
-      rollConfig.flavor += ` [${this._ammo.name}]`;
-      delete this._ammo;
+    if (this._ammo) {
+        parts.push("@ammo");
+        rollData["ammo"] = this._ammo.data.data.damage.parts.map(p => p[0]).join("+");
+        rollConfig.flavor += ` [${this._ammo.name}]`;
+        delete this._ammo;
     }
 
     // Scale melee critical hit damage
-    if ( itemData.actionType === "mwak" ) {
-      rollConfig.criticalBonusDice = this.actor.getFlag("dnd5e", "meleeCriticalDamageDice") ?? 0;
+    if (itemData.actionType === "mwak") {
+        rollConfig.criticalBonusDice = this.actor.getFlag("dnd5e", "meleeCriticalDamageDice") ?? 0;
     }
 
     // Call the roll helper utility
@@ -534,7 +521,7 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
         }, messageData);
 
         // Animate DSN for all rolls (await on last roll to have all animations finish before generating chat card)
-        const customRollerDSN = game.settings.get("multiattack-5e","customRollerDSN");
+        const customRollerDSN = game.settings.get("multiattack-5e", "customRollerDSN");
         if (game.dice3d && (customRollerDSN === "enabled" || customRollerDSN === "damageOnly")) {
             for (let i = 0; i < rolls.length; i++) {
                 if (i == rolls.length - 1) {
