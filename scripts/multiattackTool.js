@@ -7,7 +7,7 @@ export function initMultiattackTool() {
         bar.tools.push({
             name: "MA5e tool",
             title: "Multiattack",
-            icon: "fas fa-dice-d20",
+            icon: "fas fa-fist-raised",
             onClick: () => multiattackTool(),
             button: true
         });
@@ -133,9 +133,9 @@ async function multiattackTool() {
             speaker: rollsArray[0].rolls[0].messageData.speaker,
             flags: rollsArray[0].rolls[0].messageData.flags
         };
-        messageData["flags.MA5e.multiItemAttack"] = false;
-        messageData["flags.MA5e.damageRoll"] = true;
-        messageData["flags.MA5e.totalDamage"] = totalDamage;
+        messageData["flags.multiattack-5e.multiItemAttack"] = false;
+        messageData["flags.multiattack-5e.damageRoll"] = true;
+        messageData["flags.multiattack-5e.totalDamage"] = totalDamage;
 
         // Render DSN if enabled in settings
         const setting = game.settings.get("multiattack-5e", "toolDSN");
@@ -225,9 +225,18 @@ async function multiattackTool() {
     }
 
     async function midiMA5e(html) {
-        if (game.dice3d) {
-            await game.settings.set("dice-so-nice", "enabled", false);
+        const ogWorkflow = duplicate(game.settings.get("midi-qol", "ConfigSettings"));
+        if (!game.settings.get("multiattack-5e", "disableCustomMidi")) {
+           const MA5eWorkflow = game.settings.get("midi-qol", "ConfigSettings");
+           MA5eWorkflow.gmAutoAttack = true;
+           MA5eWorkflow.gmAutoDamage = true;
+           MA5eWorkflow.autoFastForward = "all";
+           await game.settings.set("midi-qol", "ConfigSettings", MA5eWorkflow);
+           console.log(game.settings.get("midi-qol", "ConfigSettings"));
         }
+            if (game.dice3d) {
+                await game.settings.set("dice-so-nice", "enabled", false);
+            }
         const selectedWeapons = await rollSelectedWeapons(html);
         let count = 0;
         let endCount = 0;
@@ -242,14 +251,19 @@ async function multiattackTool() {
         });
         const rollCompleteHook = Hooks.on("midi-qol.RollComplete", async () => {
             if (count === endCount - 1) {
+                if (!game.settings.get("multiattack-5e", "disableCustomMidi")) {
+                    await game.settings.set("midi-qol", "ConfigSettings", ogWorkflow);
+                }
                 if (game.dice3d) {
                     await game.settings.set("dice-so-nice", "enabled", true);
                 }
                 return Hooks.off('midi-qol.RollComplete', rollCompleteHook);
             }
-            count++
-            selectedWeaponsArray[count].roll();
+            count++;
+            //selectedWeaponsArray[count].roll();
+            game.dnd5e.rollItemMacro(selectedWeaponsArray[count].name);
         });
-        selectedWeaponsArray[0].roll();
+        //selectedWeaponsArray[0].roll();
+        game.dnd5e.rollItemMacro(selectedWeaponsArray[0].name);
     }
 }
