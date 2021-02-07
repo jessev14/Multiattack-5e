@@ -627,7 +627,7 @@ const addChatMessageContextOptionsMA5e = function (html, options) {
 
 function applyChatCardDamageMA5e(li, multiplier) {
     const message = game.messages.get(li.data("messageId"));
-    const amount = message["data.flags.multiattack-5e.totalDamage"] || li.find('.dice-total').text();
+    const amount = message.data.flags["multiattack-5e"].totalDamage || li.find('.dice-total').text();
     return Promise.all(canvas.tokens.controlled.map(t => {
         const a = t.actor;
         return a.applyDamage(amount, multiplier);
