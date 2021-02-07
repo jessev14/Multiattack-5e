@@ -1,5 +1,6 @@
 ### v4.3.0
-* Update for dnd5e v1.2.2
+* Update for dnd5e v1.2.4
+* Update BetterRolls 5e compatibility to use new multiroll chat card
 ### v4.2.1
 * Bug fix regarding faulty template filepath
 ### v4.2.0
