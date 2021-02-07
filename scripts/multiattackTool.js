@@ -200,28 +200,22 @@ async function multiattackTool() {
     async function betterRollsMA5e(html) {
         const selectedWeapons = await rollSelectedWeapons(html);
         if (!game.settings.get("multiattack-5e", "betterrollsDSN")) {
-            let count = game.messages.entities.length;
-            selectedWeapons.forEach(w => {
-                for (let i = 0; i < w.count; i++) {
-                    count++;
-                }
-            })
-            const rollStartHook = Hooks.on("diceSoNiceRollStart", (messageID, context) => {
+            const rollStartHook = Hooks.once("diceSoNiceRollStart", (messageID, context) => {
                 context.blind = true;
             });
-            const rollCompleteHook = Hooks.on("diceSoNiceRollComplete", () => {
-                if (game.messages.entities.length >= count) {
-                    Hooks.off("diceSoNiceRollStart", rollStartHook);
-                    Hooks.off("diceSoNiceRollComplete", rollCompleteHook);
-                }
-            });
         }
+        const card = BetterRolls.rollItem(character);
+
         selectedWeapons.forEach(async (w) => {
-            const item = character.items.find(i => i.id === w.id);
+            const item = character.items.get(w.id);
+            card.addField(["header", { img: item.img, title: item.name }]);
             for (let i = 0; i < w.count; i++) {
-                BetterRolls.quickRollById(character.id, item.id);
+                card.addField(["attack", { item: item }]);
+                card.addField(["damage", { item: item, index: "all" }]);
             }
         });
+
+        await card.toMessage();
     }
 
     async function midiMA5e(html) {
