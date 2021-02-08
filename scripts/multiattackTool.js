@@ -7,7 +7,7 @@ export function initMultiattackTool() {
         bar.tools.push({
             name: "MA5e tool",
             title: "Multiattack",
-            icon: "fas fa-dice-d20",
+            icon: "fas fa-fist-raised",
             onClick: () => multiattackTool(),
             button: true
         });
