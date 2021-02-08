@@ -55,4 +55,15 @@ export function settingsInit() {
             type: Boolean,
         });
     }
+
+    if (moduleCompatibility.midi && !game.settings.get("multiattack-5e", "disableTool")) {
+        game.settings.register("multiattack-5e", "actionsInMultiattackTool", {
+            name: "Include NPC Actions in Multiattack tool.",
+            hint: "Does not affect PCs.",
+            scope: "world",
+            config: true,
+            default: false,
+            type: Boolean,
+        });
+    }
 }

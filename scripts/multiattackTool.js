@@ -33,9 +33,14 @@ async function multiattackTool() {
     }
 
 
-
     const dialogTemplate = "modules/multiattack-5e/templates/MA5e-multi-item-dialog.html";
-    let weapons = character.items.filter(i => i.hasAttack && i.data.type === "weapon");
+    let weapons;
+    if (moduleCompatibility.midi && character.data.type === "npc") {
+        weapons = character.items.filter(i => (i.hasAttack && i.data.type === "weapon") || (i.data.type === "feat" && i.data.name !== "Multiattack" && i.data.data.activation.type === "action"));
+    } else {
+        weapons = character.items.filter(i => i.hasAttack && i.data.type === "weapon");
+    }    
+
 
     if (character.getFlag("multiattack-5e", "defaultTool")) {
         const flagItems = character.getFlag("multiattack-5e", "toolData");
