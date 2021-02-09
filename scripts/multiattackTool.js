@@ -34,12 +34,12 @@ async function multiattackTool() {
 
 
     const dialogTemplate = "modules/multiattack-5e/templates/MA5e-multi-item-dialog.html";
-    let weapons;
+    let weapons = character.items.filter(i => i.hasAttack && i.data.type === "weapon");
     if (moduleCompatibility.midi && character.data.type === "npc") {
-        weapons = character.items.filter(i => (i.hasAttack && i.data.type === "weapon") || (i.data.type === "feat" && i.data.name !== "Multiattack" && i.data.data.activation.type === "action"));
-    } else {
-        weapons = character.items.filter(i => i.hasAttack && i.data.type === "weapon");
-    }    
+        if (game.settings.get("multiattack-5e", "actionsInMultiattackTool")) {
+            weapons = character.items.filter(i => (i.hasAttack && i.data.type === "weapon") || (i.data.type === "feat" && i.data.name !== "Multiattack" && i.data.data.activation.type === "action"));
+        }
+    }
 
 
     if (character.getFlag("multiattack-5e", "defaultTool")) {
@@ -224,9 +224,7 @@ async function multiattackTool() {
     }
 
     async function midiMA5e(html) {
-        if (game.dice3d) {
-            await game.settings.set("dice-so-nice", "enabled", false);
-        }
+        if (game.dice3d) await game.settings.set("dice-so-nice", "enabled", false);
         const selectedWeapons = await rollSelectedWeapons(html);
         let count = 0;
         let endCount = 0;
@@ -239,16 +237,27 @@ async function multiattackTool() {
                 );
             }
         });
-        const rollCompleteHook = Hooks.on("midi-qol.RollComplete", async () => {
+
+        const delay = game.settings.get("multiattack-5e", "midiDelay");
+        async function midiMA5eHook() {
             if (count === endCount - 1) {
-                if (game.dice3d) {
-                    await game.settings.set("dice-so-nice", "enabled", true);
-                }
-                return Hooks.off('midi-qol.RollComplete', rollCompleteHook);
+                if (game.dice3d) await game.settings.set("dice-so-nice", "enabled", true);
+                Hooks.off("midi-qol.RollComplete", midiMA5eHook);
+                return;
             }
-            count++
-            selectedWeaponsArray[count].roll();
-        });
+            count++;
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return selectedWeaponsArray[count].roll();
+        }
+
+        if (Hooks._hooks["midi-qol.RollComplete"]) {
+            const midiMA5eHooks = Object.keys(Hooks._ids).filter(h => Hooks._ids[h].name === "midiMA5eHook");
+            if (midiMA5eHooks.length) {
+                const lastHook = parseInt(midiMA5eHooks.pop());
+                Hooks.off("midi-qol.RollComplete", lastHook)
+            }
+        }
+        Hooks.on("midi-qol.RollComplete", midiMA5eHook)
         selectedWeaponsArray[0].roll();
     }
 }

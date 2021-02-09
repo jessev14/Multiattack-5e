@@ -2,7 +2,7 @@ import { getCompatibility } from "./moduleCompatibility.js";
 
 export function settingsInit() {
     const moduleCompatibility = getCompatibility();
-    
+
     game.settings.register("multiattack-5e", "disableTool", {
         name: "Disable Multiattack Tool in Token toolbar",
         hint: "",
@@ -42,7 +42,7 @@ export function settingsInit() {
                 damageOnly: "Damage rolls only",
                 enabled: "Enabled"
             }
-        }); 
+        });
     }
 
     if (moduleCompatibility.betterrolls && !game.settings.get("multiattack-5e", "disableTool")) {
@@ -64,6 +64,21 @@ export function settingsInit() {
             config: true,
             default: false,
             type: Boolean,
+        });
+
+        game.settings.register("multiattack-5e", "midiDelay", {
+            name: "Delay in ms between rolls",
+            hint: "",
+            scope: "world",
+            type: Number,
+            default: 600,
+            range: {
+                min: 0,
+                max: 1000,
+                step: 100
+            },
+            config: false,
+            onChange: () => window.location.reload()
         });
     }
 }
