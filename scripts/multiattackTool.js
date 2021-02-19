@@ -138,9 +138,9 @@ async function multiattackTool() {
             speaker: rollsArray[0].rolls[0].messageData.speaker,
             flags: rollsArray[0].rolls[0].messageData.flags
         };
-        messageData["flags.MA5e.multiItemAttack"] = false;
-        messageData["flags.MA5e.damageRoll"] = true;
-        messageData["flags.MA5e.totalDamage"] = totalDamage;
+        messageData["flags.multiattack-5e.multiItemAttack"] = false;
+        messageData["flags.multiattack-5e.damageRoll"] = true;
+        messageData["flags.multiattack-5e.totalDamage"] = totalDamage;
 
         // Render DSN if enabled in settings
         const setting = game.settings.get("multiattack-5e", "toolDSN");
