@@ -225,42 +225,35 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
         return rolls[0];
     };
 
-    /*
-    * If only a single roll, then use default toMessage() to generate chat card
-    * Else, create chat message manually with custom template for multiple rolls
-    */
-    if (rolls.length === 1) {
-        rolls[0].toMessage(messageData, messageOptions);
-        return rolls[0];
-    } else {
-        // Use custom attackTemplate and data from rolls array to render html content for chat card
-        const attackTemplate = "/modules/multiattack-5e/templates/MA5e-attack-roll-chat.html";
-        const htmlContent = await renderTemplate(attackTemplate, { rolls: rolls });
 
-        messageData = mergeObject({
-            user: game.user._id,
-            type: 5,
-            sound: CONFIG.sounds.dice,
-            content: htmlContent,
-            roll: blankRoll
-        }, messageData);
+    // Use custom attackTemplate and data from rolls array to render html content for chat card
+    const attackTemplate = "/modules/multiattack-5e/templates/MA5e-attack-roll-chat.html";
+    const htmlContent = await renderTemplate(attackTemplate, { rolls: rolls });
 
-        // Animate DSN for all rolls (await on last roll to have all animations finish before generating chat card)
-        const customRollerSetting = game.settings.get("multiattack-5e", "customRollerDSN");
-        if (game.dice3d && (customRollerSetting === "enabled" || customRollerSetting === "attackOnly")) {
-            for (let i = 0; i < rolls.length; i++) {
-                if (i == rolls.length - 1) {
-                    await game.dice3d.showForRoll(rolls[i]);
-                } else {
-                    game.dice3d.showForRoll(rolls[i]);
-                }
+    messageData = mergeObject({
+        user: game.user._id,
+        type: 5,
+        sound: CONFIG.sounds.dice,
+        content: htmlContent,
+        roll: blankRoll
+    }, messageData);
+
+    // Animate DSN for all rolls (await on last roll to have all animations finish before generating chat card)
+    const customRollerSetting = game.settings.get("multiattack-5e", "customRollerDSN");
+    if (game.dice3d && (customRollerSetting === "enabled" || customRollerSetting === "attackOnly")) {
+        for (let i = 0; i < rolls.length; i++) {
+            if (i == rolls.length - 1) {
+                await game.dice3d.showForRoll(rolls[i]);
+            } else {
+                game.dice3d.showForRoll(rolls[i]);
             }
         }
-
-        // Create chart card
-        ChatMessage.create(messageData);
     }
+
+    // Create chart card
+    ChatMessage.create(messageData);
 }
+
 // Change template
 async function _d20RollDialogMA5e({ template, title, parts, data, rollMode, dialogOptions, roll } = {}) {
 
