@@ -6,6 +6,8 @@ export const coreRollerPatch = () => {
 
     Hooks.off("getChatLogEntryContext", addChatMessageContextOptions);
     Hooks.on("getChatLogEntryContext", addChatMessageContextOptionsMA5e);
+    Hooks.on("renderChatLog", (app, html, data) => MA5eChatListeners(html));
+    Hooks.on("renderChatPopout", (app, html, data) => MA5eChatListeners(html));
 }
 export const blankRoll = new Roll("0").evaluate(); // straight from BR5e
 
@@ -23,7 +25,7 @@ const dialogNums = [
     {
         n: 4
     },
-]
+];
 
 // Patch Item5e.rollAttack() to call d20RollMA5e()
 // No other changes, can copy and paste directly from item/entity.js after future dnd5e updates
@@ -73,7 +75,8 @@ async function rollAttackMA5e(options = {}) {
             top: options.event ? options.event.clientY - 80 : null,
             left: window.innerWidth - 710
         },
-        messageData: { "flags.dnd5e.roll": { type: "attack", itemId: this.id } }
+        messageData: { "flags.dnd5e.roll": { type: "attack", itemId: this.id } },
+        itemID: this.id
     }, options);
     rollConfig.event = options.event;
 
@@ -104,7 +107,7 @@ async function rollAttackMA5e(options = {}) {
 }
 
 // Changed inner roll function to handle multiple rolls
-async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null, template = null, title = null, speaker = null, flavor = null, fastForward = null, dialogOptions, advantage = null, disadvantage = null, critical = 20, fumble = 1, targetValue = null, elvenAccuracy = false, halflingLucky = false, reliableTalent = false, chatMessage = true, messageData = {} } = {}) {
+async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null, template = null, title = null, speaker = null, flavor = null, fastForward = null, dialogOptions, advantage = null, disadvantage = null, critical = 20, fumble = 1, targetValue = null, elvenAccuracy = false, halflingLucky = false, reliableTalent = false, chatMessage = true, messageData = {}, itemID = null } = {}) {
     // Prepare Message Data
     messageData["flags.multiattack-5e.damageRoll"] = false;
     messageData["flags.multiattack-5e.attackRoll"] = true;
@@ -235,7 +238,12 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
         type: 5,
         sound: CONFIG.sounds.dice,
         content: htmlContent,
-        roll: blankRoll
+        roll: blankRoll,
+        flags: {
+            "multiattack-5e": {
+                item: itemID
+            }
+        }
     }, messageData);
 
     // Animate DSN for all rolls (await on last roll to have all animations finish before generating chat card)
@@ -566,4 +574,36 @@ function applyChatCardDamageMA5e(li, multiplier) {
         const a = t.actor;
         return a.applyDamage(amount, multiplier);
     }));
+}
+
+// Handle Damage button on attack roll chat cards
+function MA5eChatListeners(html) {
+    html.on('click', '.multiattack-5e-damage-button button', damageButton.bind(this));
+}
+
+async function damageButton(event) {
+    const button = event.currentTarget;
+
+	const card = button.closest(".chat-card");
+	const messageId = card.closest(".message").dataset.messageId;
+	const message = game.messages.get(messageId);
+
+    // Recover the actor for the chat card
+    //const actor = game.dnd5e.entities.Item5e._getChatCardActor(card);
+    const actor = (() => {
+        const scene = game.scenes.get(message.data.speaker.scene);
+        if (!scene) return null;
+        const tokenData = scene.getEmbeddedEntity("Token", message.data.speaker.token);
+        if (!tokenData) return null;
+        const token = new Token(tokenData);
+        return token.actor;
+    })();
+
+    if ( !actor ) return;
+
+    // Get the Item from stored flag data
+    const item = actor.items.get(message.getFlag("multiattack-5e", "item"));
+    item.rollDamage();
+
+    button.disabled = false;
 }
