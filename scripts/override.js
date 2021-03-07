@@ -28,7 +28,7 @@ const dialogNums = [
 ];
 
 // Patch Item5e.rollAttack() to call d20RollMA5e()
-// No other changes, can copy and paste directly from item/entity.js after future dnd5e updates
+// Passes itemID to d20RollMA5e()
 async function rollAttackMA5e(options = {}) {
     const itemData = this.data.data;
     const flags = this.actor.data.flags.dnd5e || {};
