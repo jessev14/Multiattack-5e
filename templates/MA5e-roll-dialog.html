@@ -21,10 +21,8 @@
         <label>{{rollType}}</label>
         <select class="selectMA5e" name="numRolls">
             {{#each num}}
-            <option value={{this.n}} {{#if this.default}}selected{{/if}}>{{this.n}}</option>
+            <option value={{this.n}}>{{this.n}}</option>
             {{/each}}
         </select>
-        <input type="checkbox" id="defaultCheckbox" name="defaultCheckbox" {{#if checked}}checked{{/if}}>
-        <label class="checkboxMA5e" for="defaultCheckbox">Default</label>
     </div>
 </form>
