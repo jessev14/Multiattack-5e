@@ -11,49 +11,6 @@ export const blankRoll = new Roll("0").evaluate(); // straight from BR5e
 
 const rollDialogTemplate = "modules/multiattack-5e/templates/MA5e-roll-dialog.html";
 
-const attackDefault = {
-    default: 1,
-    nums: [
-        {
-            n: 1,
-            def: false
-        },
-        {
-            n: 2,
-            def: false
-        },
-        {
-            n: 3,
-            def: false
-        },
-        {
-            n: 4,
-            def: false
-        }
-    ]
-};
-const damageDefault = {
-    default: 1,
-    nums: [
-        {
-            n: 1,
-            def: false
-        },
-        {
-            n: 2,
-            def: false
-        },
-        {
-            n: 3,
-            def: false
-        },
-        {
-            n: 4,
-            def: false
-        }
-    ]
-};
-
 // Patch Item5e.rollAttack() to call d20RollMA5e()
 // No other changes, can copy and paste directly from item/entity.js after future dnd5e updates
 async function rollAttackMA5e(options = {}) {
@@ -327,21 +284,7 @@ async function _d20RollDialogMA5e({ template, title, parts, data, rollMode, dial
                 }
             },
             default: "normal",
-            close: html => {
-                // Determine if 'default' checkbox is checked
-                const checkValue = html.find("#defaultCheckbox")[0].checked;
-                const numRolls = html.find("[name=numRolls]")[0].value;
-                if (checkValue) {
-                    attackDefault.default = numRolls;
-                    attackDefault.nums[numRolls - 1].def = true;
-                } else {
-                    attackDefault.nums.forEach(n => {
-                        n.def = false;
-                    });
-                    attackDefault.default = 1;
-                }
-                resolve(null);
-            }
+            close: () => resolve(null)
         }, dialogOptions).render(true);
     });
 }
@@ -569,21 +512,7 @@ async function _damageRollDialogMA5e({ template, title, parts, data, allowCritic
                 },
             },
             default: "normal",
-            close: html => {
-                // Determine if 'default' checkbox is checked
-                const checkValue = html.find("#defaultCheckbox")[0].checked;
-                const numRolls = html.find("[name=numRolls]")[0].value;
-                if (checkValue) {
-                    damageDefault.default = numRolls;
-                    damageDefault.nums[numRolls - 1].def = true;
-                } else {
-                    damageDefault.nums.forEach(n => {
-                        n.def = false;
-                    });
-                    damageDefault.default = 1;
-                }
-                resolve(null);
-            }
+            close: () => resolve(null)
         }, dialogOptions).render(true);
     });
 }
