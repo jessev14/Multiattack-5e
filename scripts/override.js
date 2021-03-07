@@ -10,6 +10,20 @@ export const coreRollerPatch = () => {
 export const blankRoll = new Roll("0").evaluate(); // straight from BR5e
 
 const rollDialogTemplate = "modules/multiattack-5e/templates/MA5e-roll-dialog.html";
+const dialogNums = [
+    {
+        n: 1
+    },
+    {
+        n: 2
+    },
+    {
+        n: 3
+    },
+    {
+        n: 4
+    },
+]
 
 // Patch Item5e.rollAttack() to call d20RollMA5e()
 // No other changes, can copy and paste directly from item/entity.js after future dnd5e updates
@@ -111,7 +125,7 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
     const _roll = (parts, adv, form) => {
 
         // Determine number of attack rolls to be made based on selection in dialog
-        const numRolls = parseInt(form?.numRolls.value) || attackDefault.default;
+        const numRolls = parseInt(form?.numRolls.value);
 
         // Determine the d20 roll and modifiers
         let nd = 1;
@@ -254,8 +268,7 @@ async function _d20RollDialogMA5e({ template, title, parts, data, rollMode, dial
     //template = template || "systems/dnd5e/templates/chat/roll-dialog.html";
     let dialogData = {
         rollType: "Attacks", // to be replaced with il18n localization -jv
-        num: attackDefault.nums,
-        checked: attackDefault.default > 1,
+        num: dialogNums,
         formula: parts.join(" + "),
         data: data,
         rollMode: rollMode,
@@ -379,7 +392,7 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
     const _roll = function (parts, crit, form) {
 
         // Determine number of attack rolls to be made based on selection in dialog
-        const numRolls = parseInt(form?.numRolls.value) || damageDefault.default;
+        const numRolls = parseInt(form?.numRolls.value);
 
         // Optionally include a situational bonus
         if (form) {
@@ -486,8 +499,7 @@ async function _damageRollDialogMA5e({ template, title, parts, data, allowCritic
     //template = template || "systems/dnd5e/templates/chat/roll-dialog.html";
     let dialogData = {
         rollType: "Hits", // to be replaced with il18n localization -jv
-        num: damageDefault.nums,
-        checked: damageDefault.default > 1,
+        num: dialogNums,
         formula: parts.join(" + "),
         data: data,
         rollMode: rollMode,
