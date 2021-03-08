@@ -231,7 +231,8 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
     // Use custom attackTemplate and data from rolls array to render html content for chat card
     const attackTemplate = "/modules/multiattack-5e/templates/MA5e-attack-roll-chat.html";
     const hasDamage = arguments[0].actor?.items.get(messageData["flags.dnd5e.roll"].itemId).hasDamage;
-    const htmlContent = await renderTemplate(attackTemplate, { rolls: rolls, hasDamage: hasDamage });
+    const damageButton = hasDamage && game.settings.get("multiattack-5e", "damageButton");
+    const htmlContent = await renderTemplate(attackTemplate, { rolls: rolls, hasDamage: damageButton });
 
     messageData = mergeObject({
         user: game.user._id,

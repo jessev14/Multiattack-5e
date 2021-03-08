@@ -43,6 +43,15 @@ export function settingsInit() {
                 enabled: "Enabled"
             }
         });
+
+        game.settings.register("multiattack-5e", "damageButton", {
+            name: "Damage button on attack rolls",
+            hint: "",
+            scope: "world",
+            config: true,
+            default: true,
+            type: Boolean
+        });
     }
 
     if (moduleCompatibility.betterrolls && !game.settings.get("multiattack-5e", "disableTool")) {
