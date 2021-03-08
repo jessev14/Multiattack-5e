@@ -127,7 +127,7 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
     const _roll = (parts, adv, form=null) => {
 
         // Determine number of attack rolls to be made based on selection in dialog
-        const numRolls = form ? parseInt(form?.numRolls.value) : 1;
+        const numRolls = form ? parseInt(form.numRolls.value) : 1;
 
         // Determine the d20 roll and modifiers
         let nd = 1;
@@ -387,10 +387,10 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
     fastForward = fastForward ?? (event && (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey));
 
     // Define inner roll function
-    const _roll = function (parts, crit, form) {
+    const _roll = function (parts, crit, form=null) {
 
         // Determine number of attack rolls to be made based on selection in dialog
-        const numRolls = parseInt(form?.numRolls.value);
+        const numRolls = form ? parseInt(form.numRolls.value) : 1;
 
         // Optionally include a situational bonus
         if (form) {
@@ -432,7 +432,7 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
     const rolls = fastForward ? _roll(parts, critical || event.altKey) :
         await _damageRollDialogMA5e({ template, title, parts, data, allowCritical, rollMode: messageOptions.rollMode, dialogOptions, roll: _roll });
 
-    if (rolls === null) return null;
+    if (!rolls.length) return;
 
     for (let i = 0; i < rolls.length; i++) {
         let r = rolls[i];
