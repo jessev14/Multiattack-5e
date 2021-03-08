@@ -28,7 +28,6 @@ const dialogNums = [
 ];
 
 // Patch Item5e.rollAttack() to call d20RollMA5e()
-// Passes itemID to d20RollMA5e()
 async function rollAttackMA5e(options = {}) {
     const itemData = this.data.data;
     const flags = this.actor.data.flags.dnd5e || {};
@@ -76,7 +75,6 @@ async function rollAttackMA5e(options = {}) {
             left: window.innerWidth - 710
         },
         messageData: { "flags.dnd5e.roll": { type: "attack", itemId: this.id } },
-        itemID: this.id
     }, options);
     rollConfig.event = options.event;
 
@@ -107,7 +105,8 @@ async function rollAttackMA5e(options = {}) {
 }
 
 // Changed inner roll function to handle multiple rolls
-async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null, template = null, title = null, speaker = null, flavor = null, fastForward = null, dialogOptions, advantage = null, disadvantage = null, critical = 20, fumble = 1, targetValue = null, elvenAccuracy = false, halflingLucky = false, reliableTalent = false, chatMessage = true, messageData = {}, itemID = null } = {}) {
+async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null, template = null, title = null, speaker = null, flavor = null, fastForward = null, dialogOptions, advantage = null, disadvantage = null, critical = 20, fumble = 1, targetValue = null, elvenAccuracy = false, halflingLucky = false, reliableTalent = false, chatMessage = true, messageData = {} } = {}) {
+    //console.log(arguments[0].actor.items.get(messageData["flags.dnd5e.roll"].itemId).hasDamage)
     // Prepare Message Data
     messageData["flags.multiattack-5e.damageRoll"] = false;
     messageData["flags.multiattack-5e.attackRoll"] = true;
@@ -231,19 +230,15 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
 
     // Use custom attackTemplate and data from rolls array to render html content for chat card
     const attackTemplate = "/modules/multiattack-5e/templates/MA5e-attack-roll-chat.html";
-    const htmlContent = await renderTemplate(attackTemplate, { rolls: rolls });
+    const hasDamage = arguments[0].actor?.items.get(messageData["flags.dnd5e.roll"].itemId).hasDamage;
+    const htmlContent = await renderTemplate(attackTemplate, { rolls: rolls, hasDamage: hasDamage });
 
     messageData = mergeObject({
         user: game.user._id,
         type: 5,
         sound: CONFIG.sounds.dice,
         content: htmlContent,
-        roll: blankRoll,
-        flags: {
-            "multiattack-5e": {
-                item: itemID
-            }
-        }
+        roll: blankRoll
     }, messageData);
 
     // Animate DSN for all rolls (await on last roll to have all animations finish before generating chat card)
@@ -602,7 +597,7 @@ async function damageButton(event) {
     if ( !actor ) return;
 
     // Get the Item from stored flag data
-    const item = actor.items.get(message.getFlag("multiattack-5e", "item"));
+    const item = actor.items.get(message.getFlag("dnd5e", "roll").itemId);
     item.rollDamage();
 
     button.disabled = false;
