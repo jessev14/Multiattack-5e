@@ -124,10 +124,10 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
     }
 
     // Define the inner roll function
-    const _roll = (parts, adv, form) => {
+    const _roll = (parts, adv, form=null) => {
 
         // Determine number of attack rolls to be made based on selection in dialog
-        const numRolls = parseInt(form?.numRolls.value);
+        const numRolls = form ? parseInt(form?.numRolls.value) : 1;
 
         // Determine the d20 roll and modifiers
         let nd = 1;
@@ -207,7 +207,7 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
     const rolls = fastForward ? _roll(parts, adv) :
         await _d20RollDialogMA5e({ template, title, parts, data, rollMode: messageOptions.rollMode, dialogOptions, roll: _roll });
 
-    if (rolls === null) return null;
+    if (!rolls.length) return;
 
     for (let i = 0; i < rolls.length; i++) {
         let r = rolls[i];
@@ -222,6 +222,7 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
     }
 
     // When called by Multiattack tool
+   
     if (!chatMessage) {
         rolls[0].messageData = messageData;
         return rolls[0];
@@ -575,6 +576,7 @@ function applyChatCardDamageMA5e(li, multiplier) {
 // Handle Damage button on attack roll chat cards
 function MA5eChatListeners(html) {
     html.on('click', '.multiattack-5e-damage-button button', damageButton.bind(this));
+    html.on('click', '.multiattack-5e-multi-item-damage-button button', multiItemDamageButton.bind(this));
 }
 
 async function damageButton(event) {
@@ -602,4 +604,7 @@ async function damageButton(event) {
     item.rollDamage();
 
     button.disabled = false;
+}
+async function multiItemDamageButton(event) {
+    console.log('button clicked')
 }
