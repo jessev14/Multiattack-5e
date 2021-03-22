@@ -22,8 +22,7 @@ export function getCompatibility() {
             betterrolls = true;
         }
         if (activeModules.includes("midi-qol")) {
-            if (game.settings.get("midi-qol", "EnableWorkflow")) midi = true;
-            else core = true;
+            midi = true;
         }
     }
 
