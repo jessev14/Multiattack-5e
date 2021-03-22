@@ -1,3 +1,15 @@
+### 4.5.0
+* Add damage button on all attack rolls (can be disabled in settings).
+* Remove Default checkbox for extra attacks.
+* Last update before v5.0.0 for real this time.
+### 4.4.1
+* Minor fix on flag setting for multi-item damage rolls.
+* Final update before v5.0.0 update for FVTT core v0.8.0.
+### 4.4.0
+* Improved Midi-QOL compatibility.
+### v4.3.1
+* Revert Midi-QOL compatibility back to working state.
+* Improved compatibility in development.
 ### v4.3.0
 * Update for dnd5e v1.2.4
 * Update BetterRolls 5e compatibility to use new multiroll chat card

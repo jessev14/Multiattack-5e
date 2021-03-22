@@ -96,7 +96,8 @@ export async function multiattackTool(dOptions=null) {
         const rollsArray = await rollSelectedWeapons(html, "attack");
         if (!rollsArray.length) return null;
         const attackTemplate = "modules/multiattack-5e/templates/MA5e-multi-item-attack-chat.html";
-        const chatContent = await renderTemplate(attackTemplate, { outerRolls: rollsArray });
+        const damageButton = game.settings.get("multiattack-5e", "damageButton");
+        const chatContent = await renderTemplate(attackTemplate, { outerRolls: rollsArray, damageButton});
         const messageData = {
             user: game.user._ud,
             type: 5,
