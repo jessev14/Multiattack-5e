@@ -15,7 +15,7 @@ export function initMultiattackTool() {
 }
 
 
-async function multiattackTool() {
+export async function multiattackTool(dOptions=null) {
     const moduleCompatibility = getCompatibility();
     let character;
     let cName;
@@ -62,7 +62,7 @@ async function multiattackTool() {
     }
 
     const dialogContent = await renderTemplate(dialogTemplate, { weapons: weapons, defaultCheck: character.getFlag("multiattack-5e", "defaultTool") });
-    const dialogOptions = {
+    const dialogOptions = dOptions ? dOptions : {
         id: "multiattack-tool-dialog",
         width: 250,
         left: 120,
@@ -105,9 +105,12 @@ async function multiattackTool() {
             roll: blankRoll,
             flavor: "",
             speaker: rollsArray[0].rolls[0].messageData.speaker,
-            flags: rollsArray[0].rolls[0].messageData.flags
+            flags: {
+                "multiattack-5e.multiItemAttack": true,
+                "multiattack-5e.items": rollsArray
+            }
         };
-        messageData["flags.multiattack-5e.multiItemAttack"] = true;
+        //messageData["flags.multiattack-5e.multiItemAttack"] = true;
 
         // Render DSN if enabled in settings
         const setting = game.settings.get("multiattack-5e", "toolDSN");

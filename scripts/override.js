@@ -1,4 +1,5 @@
 import { addChatMessageContextOptions } from "/systems/dnd5e/module/chat.js";
+import { multiattackTool } from "./multiattackTool.js";
 
 export const coreRollerPatch = () => {
     game.dnd5e.entities.Item5e.prototype.rollAttack = rollAttackMA5e;
@@ -207,7 +208,7 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
     const rolls = fastForward ? _roll(parts, adv) :
         await _d20RollDialogMA5e({ template, title, parts, data, rollMode: messageOptions.rollMode, dialogOptions, roll: _roll });
 
-    if (!rolls.length) return;
+    if (!rolls?.length) return;
 
     for (let i = 0; i < rolls.length; i++) {
         let r = rolls[i];
@@ -222,6 +223,8 @@ async function d20RollMA5e({ parts = [], data = {}, event = {}, rollMode = null,
     }
 
     // When called by Multiattack tool
+
+    console.log(rolls)
    
     if (!chatMessage) {
         rolls[0].messageData = messageData;
@@ -432,7 +435,7 @@ async function damageRollMA5e({ parts, actor, data, event = {}, rollMode = null,
     const rolls = fastForward ? _roll(parts, critical || event.altKey) :
         await _damageRollDialogMA5e({ template, title, parts, data, allowCritical, rollMode: messageOptions.rollMode, dialogOptions, roll: _roll });
 
-    if (!rolls.length) return;
+    if (!rolls) return;
 
     for (let i = 0; i < rolls.length; i++) {
         let r = rolls[i];
@@ -581,7 +584,6 @@ function MA5eChatListeners(html) {
 
 async function damageButton(event) {
     const button = event.currentTarget;
-
 	const card = button.closest(".chat-card");
 	const messageId = card.closest(".message").dataset.messageId;
 	const message = game.messages.get(messageId);
@@ -601,10 +603,23 @@ async function damageButton(event) {
 
     // Get the Item from stored flag data
     const item = actor.items.get(message.getFlag("dnd5e", "roll").itemId);
-    item.rollDamage();
+    item.rollDamage({event});
 
     button.disabled = false;
 }
 async function multiItemDamageButton(event) {
-    console.log('button clicked')
+    const button = event.currentTarget;
+    const card = button.closest(".chat-card");
+	const messageId = card.closest(".message").dataset.messageId;
+	const message = game.messages.get(messageId);
+    if (message.getFlag("multiattack-5e","multiItemAttack")) {
+        multiattackTool({
+            id: "multiattack-tool-dialog",
+            width: 250,
+            top: event ? event.clientY - 80 : null,
+            left: window.innerWidth - 559
+        });
+    }
+
+    button.disabled = false;
 }
