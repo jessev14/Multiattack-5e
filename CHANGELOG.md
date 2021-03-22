@@ -1,7 +1,3 @@
-### 4.5.0
-* Add damage button on all attack rolls (can be disabled in settings).
-* Remove Default checkbox for extra attacks.
-* Last update before v5.0.0 for real this time.
 ### 4.4.1
 * Minor fix on flag setting for multi-item damage rolls.
 * Final update before v5.0.0 update for FVTT core v0.8.0.
