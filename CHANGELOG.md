@@ -1,6 +1,6 @@
 ### 4.4.2
-* Hotfix that prevents DSN from being disabled
-* Manual fix (run in console): `game.settings.set("dice-so-nice", "enabled", true);`
+* Removed bug involving DSN; MA5e should no longer disable DSN unintentionally
+* Manual fix if DSN still disabled (run in console): `game.settings.set("dice-so-nice", "enabled", true);`
 ### 4.4.1
 * Minor fix on flag setting for multi-item damage rolls.
 * Final update before v5.0.0 update for FVTT core v0.8.0.
