@@ -4,7 +4,8 @@
 }
 
 .form-group > select.selectMA5e {
-    flex: 3;
+    flex: 2;
+    padding: 0px 10px 0px 3px;
 }
 
 .dice-result > .totalMA5e {

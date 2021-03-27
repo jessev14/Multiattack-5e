@@ -15,7 +15,7 @@ export function initMultiattackTool() {
 }
 
 
-export async function multiattackTool(dOptions=null) {
+async function multiattackTool() {
     const moduleCompatibility = getCompatibility();
     let character;
     let cName;
@@ -62,7 +62,7 @@ export async function multiattackTool(dOptions=null) {
     }
 
     const dialogContent = await renderTemplate(dialogTemplate, { weapons: weapons, defaultCheck: character.getFlag("multiattack-5e", "defaultTool") });
-    const dialogOptions = dOptions ? dOptions : {
+    const dialogOptions = {
         id: "multiattack-tool-dialog",
         width: 250,
         left: 120,
@@ -96,8 +96,7 @@ export async function multiattackTool(dOptions=null) {
         const rollsArray = await rollSelectedWeapons(html, "attack");
         if (!rollsArray.length) return null;
         const attackTemplate = "modules/multiattack-5e/templates/MA5e-multi-item-attack-chat.html";
-        const damageButton = game.settings.get("multiattack-5e", "damageButton");
-        const chatContent = await renderTemplate(attackTemplate, { outerRolls: rollsArray, damageButton});
+        const chatContent = await renderTemplate(attackTemplate, { outerRolls: rollsArray });
         const messageData = {
             user: game.user._ud,
             type: 5,
@@ -106,12 +105,9 @@ export async function multiattackTool(dOptions=null) {
             roll: blankRoll,
             flavor: "",
             speaker: rollsArray[0].rolls[0].messageData.speaker,
-            flags: {
-                "multiattack-5e.multiItemAttack": true,
-                "multiattack-5e.items": rollsArray
-            }
+            flags: rollsArray[0].rolls[0].messageData.flags
         };
-        //messageData["flags.multiattack-5e.multiItemAttack"] = true;
+        messageData["flags.multiattack-5e.multiItemAttack"] = true;
 
         // Render DSN if enabled in settings
         const setting = game.settings.get("multiattack-5e", "toolDSN");
