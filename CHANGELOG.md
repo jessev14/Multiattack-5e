@@ -1,3 +1,14 @@
+### 4.4.2
+* Hotfix that prevents DSN from being disabled
+* Manual fix (run in console): `game.settings.set("dice-so-nice", "enabled", true);`
+### 4.4.1
+* Minor fix on flag setting for multi-item damage rolls.
+* Final update before v5.0.0 update for FVTT core v0.8.0.
+### 4.4.0
+* Improved Midi-QOL compatibility.
+### v4.3.1
+* Revert Midi-QOL compatibility back to working state.
+* Improved compatibility in development.
 ### v4.3.0
 * Update for dnd5e v1.2.4
 * Update BetterRolls 5e compatibility to use new multiroll chat card
