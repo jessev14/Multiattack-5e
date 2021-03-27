@@ -205,7 +205,7 @@ async function multiattackTool() {
     async function betterRollsMA5e(html) {
         const selectedWeapons = await rollSelectedWeapons(html);
         if (!game.settings.get("multiattack-5e", "betterrollsDSN")) {
-            const rollStartHook = Hooks.once("diceSoNiceRollStart", (messageID, context) => {
+            Hooks.once("diceSoNiceRollStart", (messageID, context) => {
                 context.blind = true;
             });
         }
@@ -224,7 +224,6 @@ async function multiattackTool() {
     }
 
     async function midiMA5e(html) {
-        if (game.dice3d) await game.settings.set("dice-so-nice", "enabled", false);
         const selectedWeapons = await rollSelectedWeapons(html);
         let count = 0;
         let endCount = 0;
@@ -239,25 +238,22 @@ async function multiattackTool() {
         });
 
         const delay = game.settings.get("multiattack-5e", "midiDelay");
+        function MA5eRollStart(id, context) {
+            context.blind = true;
+        }
         async function midiMA5eHook() {
             if (count === endCount - 1) {
-                if (game.dice3d) await game.settings.set("dice-so-nice", "enabled", true);
-                Hooks.off("midi-qol.RollComplete", midiMA5eHook);
+                Hooks.off("diceSoNiceRollStart", MA5eRollStart);
                 return;
             }
+            Hooks.once("midi-qol.RollComplete", midiMA5eHook);
             count++;
             await new Promise(resolve => setTimeout(resolve, delay));
             return selectedWeaponsArray[count].roll();
         }
 
-        if (Hooks._hooks["midi-qol.RollComplete"]) {
-            const midiMA5eHooks = Object.keys(Hooks._ids).filter(h => Hooks._ids[h].name === "midiMA5eHook");
-            if (midiMA5eHooks.length) {
-                const lastHook = parseInt(midiMA5eHooks.pop());
-                Hooks.off("midi-qol.RollComplete", lastHook)
-            }
-        }
-        Hooks.on("midi-qol.RollComplete", midiMA5eHook)
+        Hooks.on("diceSoNiceRollStart", MA5eRollStart);
+        Hooks.once("midi-qol.RollComplete", midiMA5eHook);
         selectedWeaponsArray[0].roll();
     }
 }
