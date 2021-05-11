@@ -1,24 +1,14 @@
-.form-group > label.checkboxMA5e {
-    font-size: 12px;
-    flex: 0;
-}
-
-.form-group > select.selectMA5e {
-    flex: 2;
-    padding: 0px 10px 0px 3px;
-}
-
-.dice-result > .totalMA5e {
+/*(.dice-result > .totalMA5e {
     color: rgb(44, 42, 168);
-}
+} */
 
-.MA5e-multi-item {
+.MA5e-multiattack {
     display: grid;
     grid-template-columns: 30px 105px 60px 20px;
     column-gap: 5px;
 }
 
-.MA5e-multi-item > label > img.imgMA5e {
+.MA5e-multiattack > label > img.imgMA5e {
     width: 30px;
     height: 30px;
     margin: 0px 5px 0px 0px;
@@ -29,7 +19,7 @@
     align-self: center;
 }
 
-.MA5e-multi-item > label.labelMA5e {
+.MA5e-multiattack > label.labelMA5e {
     grid-column-start: 2;
     grid-column-end: 3;
     align-self: center;
@@ -39,24 +29,24 @@
     overflow: hidden;
 }
 
-.MA5e-multi-item > input.inputMA5e {
+.MA5e-multiattack > input.inputMA5e {
     grid-column-start: 3;
     grid-column-end: 4;
     align-self: center;
 }
 
-.MA5e-multi-item > input.dialog-checkbox {
+.MA5e-multiattack > input.dialog-checkbox {
     grid-column-start: 4;
     grid-column-end: 5;
     align-self: center;
 }
 
-.MA5e-multi-item-flex {
+.MA5e-multiattack-flex {
     display: flex;
     align-items: center;
 } 
 
-.MA5e-multi-item-flex > .buttonMA5e {
+.MA5e-multiattack-flex > .buttonMA5e {
     background: rgba(0, 0, 0, 0.1);
     border: 2px groove #f0f0e0;
 }

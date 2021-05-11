@@ -1,25 +1,45 @@
-console.log("MA5e | multiattack-5e.js Loaded");
-
-import { settingsInit } from "./settings.js";
-import { getCompatibility } from "./moduleCompatibility.js";
-import { coreRollerPatch } from "./override.js";
-import { initMultiattackTool } from "./multiattackTool.js";
+import MA5e from "./MA5e.js";
 
 Hooks.once("init", () => {
-    const moduleCompatibility = getCompatibility();
-    
-    // Initialize settings
-    settingsInit();
+    console.log("Multiattack 5e | Initializing");
 
-    // If not using BR or Midi, override item attack/damage rolling + templates
-    if (moduleCompatibility.core) {
-        console.log("MA5e | Patching core roller");
-        coreRollerPatch();
-    }
+    // Register module settings
+    game.settings.register("multiattack-5e", "enableTool", {
+        name: game.i18n.localize("multiattack-5e.settings.disableTool.name"),
+        hint: game.i18n.localize("multiattack-5e.settings.disableTool.hint"),
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: true,
+        onChange: () => ui.controls.render(true)
+    });
 
-    // Add Multiattack Tool button to token layer toolbar
-    if (!game.settings.get("multiattack-5e", "disableTool")) {
-        console.log("MA5e | Adding Multiattack tool")
-        initMultiattackTool();     
-    }
+    game.settings.register("multiattack-5e", "playerTool", {
+        name: game.i18n.localize("multiattack-5e.settings.playerTool.name"),
+        hint: game.i18n.localize("multiattack-5e.settings.playerTool.hint"),
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: false
+    });
+
+    game.settings.register("multiattack-5e", "extraAttackDSN", {
+        name: game.i18n.localize("multiattack-5e.settings.extraAttackDSN.name"),
+        hint: "",
+        scope: "world",
+        config: false,
+        type: String,
+        //default: false
+    });
+
+});
+
+Hooks.once("setup", () => {
+    game.MA5e = new MA5e();
+    game.MA5e.corePatching();
+    if (game.settings.get("multiattack-5e", "enableTool")) game.MA5e.multiattackToolInit();
+});
+
+Hooks.once("ready", () => {
+
 });

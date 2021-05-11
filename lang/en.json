@@ -1,4 +1,35 @@
 {
-    "MA5e.Attacks": "Attacks",
-    "MA5e.Hits": "Hits"
+    "multiattack-5e": {
+        "settings": {
+            "disableTool": {
+                "name":"Multiattack Tool",
+                "hint": "Enable tool in token control bar."
+            },
+            "playerTool": {
+                "name": "Multiattack Tool For Players" ,
+                "hint": "Requires \"Enable Multiattack Tool in token control bar\" setting enabled."
+            },
+            "extraAttackDSN": {
+                "name": "Animate DsN! for Extra Attacks"
+            }
+        },
+        "ui": {
+            "selectOneToken": "Select one token.",
+            "setDefault": "Default set for",
+            "clearDefault": "Default cleared for"
+        },
+        "chat": {
+            "total": "Total"
+        },
+        "tool": {
+            "control": {
+                "title": "Multiattack"
+            },
+            "dialog": {
+                "title": "Multiattack Tool",
+                "setDefault": "Set Default",
+                "clearDefault": "Clear Default"
+            }
+        }
+    }
 }
