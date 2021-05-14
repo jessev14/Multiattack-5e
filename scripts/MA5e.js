@@ -219,12 +219,14 @@ export default class MA5e {
         };
 
         // If Dice So Nice! module is active, render 3D dice before creating chat message
+        /*
         if (game.dice3d) {
             for (let i = 0; i < rollArray.length; i++) {
                 if (i === rollArray.length - 1) await game.dice3d.showForRoll(rollArray[i]);
                 else game.dice3d.showForRoll(rollArray[i]);
             }
         }
+        */
 
         // Create custom chat message
         ChatMessage.create(messageData);
