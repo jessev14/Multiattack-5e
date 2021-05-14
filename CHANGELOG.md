@@ -1,3 +1,6 @@
+### 5.0.0
+* Complete package re-write
+* Foundry core v0.8.3 compatibility
 ### 4.4.2
 * Removed bug involving DSN; MA5e should no longer disable DSN unintentionally
 * Manual fix if DSN still disabled (run in console): `game.settings.set("dice-so-nice", "enabled", true);`
