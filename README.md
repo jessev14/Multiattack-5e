@@ -1,5 +1,8 @@
 ![All Downloads](https://img.shields.io/github/downloads/jessev14/Multiattack-5e/total?style=for-the-badge)
 
+[![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fmultiattack-5e&colorB=4aa94a)](https://forge-vtt.com/bazaar#package=multiattack-5e)
+
+
 # Multiattack 5e
 
 Multiattack 5e (MA5e) is a FoundryVTT module for the DnD5e system that streamlines the multiattack action.
