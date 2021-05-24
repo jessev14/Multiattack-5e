@@ -180,6 +180,7 @@ export default class MA5e {
                 roll = await game.MA5e.og_rollDamage.call(item, { event: { altKey: false }, options: { fastForward: true, chatMessage: false } });
                 totalDamage += roll.total;
             }
+            if (!roll) return;
             roll.options.tooltip = await roll.getTooltip();
             if (rollType === "attack") roll.options.highlight = roll.terms[0].total > roll.options.critical - 1 ? "critical" : roll.terms[0].total < roll.options.fumble + 1 ? "fumble" : "";
             rollArray[itemIndex].rolls.push(roll);
