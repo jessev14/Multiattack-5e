@@ -3,9 +3,9 @@
     "title": "Multiattack 5e",
     "description": "",
     "author": "enso#0361",
-    "version": "5.0.0",
+    "version": "5.0.2",
     "minimumCoreVersion": "0.8.3",
-    "compatibleCoreVersion": "0.8.3",
+    "compatibleCoreVersion": "0.8.5",
     "esmodules": [
         "scripts/multiattack-5e.js"
     ],
