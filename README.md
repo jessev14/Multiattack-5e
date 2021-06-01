@@ -40,8 +40,8 @@ game.MA5e.multiattack(itemNameArray, rollType, actor); // rollType and actor arg
 ```
 
 ## Incompatibilities
-As of core Foundry v0.8.3 (beta), MA5e is not compatible with other modules that affect rolling (e.g. Better Rolls for 5e, Midi-QOL, Minimum Rolling Enhancements, etc.).
-Compatibility will be re-implemented once core Foundry 0.8.X reaches a stable release.
+As of core Foundry v0.8.6, MA5e is not compatible with other modules that affect rolling (e.g. Better Rolls for 5e, Midi-QOL, Minimum Rolling Enhancements, etc.).
+Compatibility will be re-implemented once those modules release stable versions for 0.8.X.
 
 ## Technical Notes
 
