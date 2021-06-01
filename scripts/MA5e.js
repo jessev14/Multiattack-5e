@@ -53,6 +53,9 @@ export default class MA5e {
             // Add (total) number of rolls to make
             const numRolls = parseInt(html.find("#numRolls").val());
             roll.options.extraAttack = numRolls;
+            // Save roll mode
+            const rollMode = html.find("select[name='rollMode']").val();
+            roll.options.rollMode = rollMode;
             return roll;
         }
 
@@ -72,6 +75,7 @@ export default class MA5e {
                 // Get chat message entity and chat message data from hook arguments (destructuring assignment)
                 const [chatMessage, chatMessageData] = hookArgs;
                 const primeRoll = chatMessage.roll;
+                const rollMode = primeRoll.options.rollMode;
                 // If for some reason hook catches a chat message that is not the expected roll, exit
                 if (!chatMessage.isRoll) return true;
                 // If fast forward roll, exit (default to single roll)
@@ -117,7 +121,7 @@ export default class MA5e {
                     }
 
                     // Generate chat message
-                    game.MA5e.generateChatMessage([rollArray], chatMessageData.speaker);
+                    game.MA5e.generateChatMessage({rollArray: [rollArray], speaker: chatMessageData.speaker, rollMode});
                 }
 
                 async function extraDamageRolls() {
@@ -154,7 +158,7 @@ export default class MA5e {
                     }
 
                     // Generate chat message
-                    game.MA5e.generateChatMessage([rollArray], chatMessageData.speaker, totalDamage);
+                    game.MA5e.generateChatMessage({rollArray: [rollArray], speaker:chatMessageData.speaker, totalDamage, rollMode});
                 }
             }
         }
@@ -200,12 +204,12 @@ export default class MA5e {
             item.formula = `${item.rolls[0].formula}`;
         }
 
-        game.MA5e.generateChatMessage(rollArray, ChatMessage.getSpeaker({ actor }), totalDamage);
+        game.MA5e.generateChatMessage({rollArray, speaker: ChatMessage.getSpeaker({ actor }), totalDamage});
 
         return rollArray;
     }
 
-    async generateChatMessage(rollArray, speaker, totalDamage = false) {
+    async generateChatMessage({rollArray, speaker, totalDamage = false, rollMode = false} = {}) {
         // Render chat message content using custom template
         const content = await renderTemplate("modules/multiattack-5e/templates/multiattack-chat.hbs", { outerRolls: rollArray, totalDamage });
         // Create chat messageData
@@ -215,7 +219,7 @@ export default class MA5e {
             sound: CONFIG.sounds.dice,
             content,
             roll: await new Roll("0").evaluate(), // "blank" roll
-            rollMode: game.settings.get("core", "rollMode"),
+            rollMode: rollMode || game.settings.get("core", "rollMode"),
             flags: { "multiattack-5e": { totalDamage } }
         };
 
