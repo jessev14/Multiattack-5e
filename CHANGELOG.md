@@ -1,3 +1,6 @@
+### 5.1.0
+* Foundry core v0.8.6 compatibility
+* Extra-attacks will now properly follow roll mode set in attack/damage configuration window
 ### 5.0.0
 * Complete package re-write
 * Foundry core v0.8.3 compatibility
