@@ -39,10 +39,6 @@ const actor = canvas.tokens.controlled[0].actor; // GM users could pre-define mu
 game.MA5e.multiattack(itemNameArray, rollType, actor); // rollType and actor arguments are optional (default to "attack" and "canvas.tokens.controlled[0].actor" respectively)
 ```
 
-## Incompatibilities
-As of core Foundry v0.8.6, MA5e is not compatible with other modules that affect rolling (e.g. Better Rolls for 5e, Midi-QOL, Minimum Rolling Enhancements, etc.).
-Compatibility will be re-implemented once those modules release stable versions for 0.8.X.
-
 ## Technical Notes
 
 ### Extra Attacks with default dnd5e roller 
