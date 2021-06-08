@@ -4,8 +4,8 @@ export default class MA5e {
         this.og_rollDamage = CONFIG.Item.documentClass.prototype.rollDamage;
     }
 
-    corePatching() {
-        console.log("MA5e | corePatching");
+    coreInit() {
+        console.log("MA5e | coreInit");
 
         // Inject extra attack number selector to attack/damage roll configuration dialog
         Hooks.on("renderDialog", async (dialog, html, dialogData) => {
@@ -121,7 +121,7 @@ export default class MA5e {
                     }
 
                     // Generate chat message
-                    game.MA5e.generateChatMessage({rollArray: [rollArray], speaker: chatMessageData.speaker, rollMode});
+                    game.MA5e.generateChatMessage({rollArray: [rollArray], speaker: chatMessageData.speaker, rollMode, rollType});
                 }
 
                 async function extraDamageRolls() {
@@ -158,7 +158,7 @@ export default class MA5e {
                     }
 
                     // Generate chat message
-                    game.MA5e.generateChatMessage({rollArray: [rollArray], speaker:chatMessageData.speaker, totalDamage, rollMode});
+                    game.MA5e.generateChatMessage({rollArray: [rollArray], speaker:chatMessageData.speaker, totalDamage, rollMode, rollType});
                 }
             }
         }
@@ -204,12 +204,12 @@ export default class MA5e {
             item.formula = `${item.rolls[0].formula}`;
         }
 
-        game.MA5e.generateChatMessage({rollArray, speaker: ChatMessage.getSpeaker({ actor }), totalDamage});
+        game.MA5e.generateChatMessage({rollArray, speaker: ChatMessage.getSpeaker({ actor }), totalDamage, rollType, multiattack: true});
 
         return rollArray;
     }
 
-    async generateChatMessage({rollArray, speaker, totalDamage = false, rollMode = false} = {}) {
+    async generateChatMessage({rollArray, speaker, totalDamage = false, rollMode = false, rollType = "attack", multiattack = false} = {}) {
         // Render chat message content using custom template
         const content = await renderTemplate("modules/multiattack-5e/templates/multiattack-chat.hbs", { outerRolls: rollArray, totalDamage });
         // Create chat messageData
@@ -224,15 +224,25 @@ export default class MA5e {
         };
 
         // If Dice So Nice! module is active, render 3D dice before creating chat message
-        /*
-        if (game.dice3d) {
-            for (let i = 0; i < rollArray.length; i++) {
-                if (i === rollArray.length - 1) await game.dice3d.showForRoll(rollArray[i]);
-                else game.dice3d.showForRoll(rollArray[i]);
+        let dsn = game.modules.get("dice-so-nice")?.active;
+        const dsnMultiattack = game.settings.get("multiattack-5e", "multiattackDSN");
+        const dsnExtraAttack = game.settings.get("multiattack-5e", "extraAttackDSN");
+        if (dsn) {
+            if (multiattack) {
+                if (!(dsnMultiattack === "enabled" || dsnMultiattack === rollType)) dsn = false;
+            } else {
+                if (!(dsnExtraAttack === "enabled" || dsnExtraAttack === rollType)) dsn = false;
             }
         }
-        */
-
+        if (dsn) {
+            for (let i = 0; i < rollArray.length; i++) {
+                for (let j = 0; j < rollArray[i].rolls.length; j++) {
+                    if (i === rollArray.length && j === rollArray[i].rolls.length) await game.dice3d.showForRoll(rollArray[i].rolls[j], game.user, true);
+                    else game.dice3d.showForRoll(rollArray[i].rolls[j], game.user, true);
+                }
+            }
+        }
+    
         // Create custom chat message
         ChatMessage.create(messageData);
     }
@@ -240,7 +250,7 @@ export default class MA5e {
 
     defaultMultiattack(token, rollType = "attack") {
         const defaultMultiattack = game.MA5e.getToolDefault(token.actor);
-        return game.MA5e.multiAttack(defaultMultiattack, rollType);
+        return game.MA5e.multiattack(defaultMultiattack, rollType);
     }
 
     multiattackToolInit() {
@@ -250,7 +260,7 @@ export default class MA5e {
                 name: "Multiattack Tool",
                 title: game.i18n.localize("multiattack-5e.tool.control.title"),
                 icon: "fas fa-fist-raised",
-                onClick: () => game.MA5e.multiattackToolDialog(),
+                onClick: game.MA5e.multiattackToolDialog.bind(),
                 button: true
             });
         });
@@ -281,35 +291,85 @@ export default class MA5e {
         };
 
         let rollType, itemNameArray;
+        const buttons = {
+            attack: {
+                label: game.i18n.localize("DND5E.Attack"),
+                callback: (html) => {
+                    rollType = "attack";
+                    itemNameArray = game.MA5e.buildItemNameArray(html);
+                }
+            },
+            damage: {
+                label: game.i18n.localize("DND5E.Damage"),
+                callback: (html) => {
+                    rollType = "damage";
+                    itemNameArray = game.MA5e.buildItemNameArray(html);
+                }
+            }
+        };
+        if (game.modules.get("midi-qol")?.active) delete buttons.damage;
         await new Promise(resolve => {
             new Dialog({
                 title: `${game.i18n.localize("multiattack-5e.tool.dialog.title")} - ${actor.name}`,
                 content,
-                buttons: {
-                    attack: {
-                        label: game.i18n.localize("DND5E.Attack"),
-                        callback: (html) => {
-                            rollType = "attack";
-                            itemNameArray = game.MA5e.buildItemNameArray(html);
-                            resolve();
-                        }
-                    },
-                    damage: {
-                        label: game.i18n.localize("DND5E.Damage"),
-                        callback: (html) => {
-                            rollType = "damage";
-                            itemNameArray = game.MA5e.buildItemNameArray(html);
-                            resolve();
-                        }
-                    }
-                },
+                buttons,
                 default: "attack",
                 close: () => resolve()
             }, dialogOptions).render(true);
         });
 
         if (!itemNameArray) return;
+        if (game.modules.get("midi-qol")?.active) return game.MA5e.midiMA5e(itemNameArray, actor);
+        if (game.modules.get("betterrolls5e")?.active) return game.MA5e.brMA5E(itemNameArray, actor);
         return game.MA5e.multiattack(itemNameArray, rollType, actor);
+    }
+
+    brMA5E(itemNameArray, actor) {
+        if (!game.settings.get("multiattack-5e", "betterRollsDSN")) {
+            Hooks.once("diceSoNiceRollStart", (messageID, context) => {context.blind = true});
+        } 
+        const card = BetterRolls.rollItem(actor);
+        let item = actor.items.getName(itemNameArray[0]);
+        card.addField("header", { img: item.img, title: item.name });
+        for (let i = 0; i < itemNameArray.length; i++) {
+            item = actor.items.getName(itemNameArray[i]);
+            card.addField("attack", { item });
+            card.addField("damage", { item, index: "all" });
+
+            if (i === itemNameArray.length - 1) break;
+            if (itemNameArray[i] !== itemNameArray[i + 1]) {
+                item = actor.items.getName(itemNameArray[i + 1]);
+                card.addField("header", { img: item.img, title: item.name });
+            }
+
+        }
+
+        card.toMessage();
+    }
+
+    async midiMA5e(itemNameArray, actor) {
+        let count = 0;
+        const endCount = itemNameArray.length - 1;
+        const itemsArray = [];
+        for (let itemName of itemNameArray) itemsArray.push(actor.items.getName(itemName));
+
+        Hooks.on("diceSoNiceRollStart", midiMA5eRollStart);
+        Hooks.once("midi-qol.RollComplete", midiMA5eHook);
+        itemsArray[0].roll();
+
+        function midiMA5eRollStart(id, context) {
+            context.blind = true;
+        }
+
+        async function midiMA5eHook() {
+            if (count === endCount) {
+                return Hooks.off("diceSoNiceRollStart", midiMA5eRollStart)
+            };
+            Hooks.once("midi-qol.RollComplete", midiMA5eHook);
+            count++;
+            await new Promise(resolve => setTimeout(resolve, 800));
+            return await itemsArray[count].roll();
+        }
     }
 
     buildItemNameArray(html) {

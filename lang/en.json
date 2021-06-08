@@ -7,11 +7,22 @@
             },
             "playerTool": {
                 "name": "Multiattack Tool For Players" ,
-                "hint": "Requires \"Enable Multiattack Tool in token control bar\" setting enabled."
+                "hint": "Requires \"Multiattack Tool\" setting enabled."
             },
             "extraAttackDSN": {
-                "name": "Animate DsN! for Extra Attacks"
-            }
+                "name": "Animate DsN! for Extra Attacks",
+                "hint": "Will not affect single attack/damage rolls."
+            },
+            "multiattackDSN": {
+                "name": "Animate DsN! for Multiattacks"
+            },
+            "betterRollsDSN": {
+                "name": "Animate DsN! for Better Rolls"
+            },
+            "disabled": "Disabled",
+            "attackOnly": "Attack rolls only",
+            "damageOnly": "Damage rolls only",
+            "enabled": "Enabled"
         },
         "ui": {
             "selectOneToken": "Select one token.",
