@@ -1,3 +1,5 @@
+### 5.2.0
+* Re-implemented compatibility with Midi-QOL and Better Rolls for 5e
 ### 5.1.0
 * Foundry core v0.8.6 compatibility
 * Extra-attacks will now properly follow roll mode set in attack/damage configuration window
