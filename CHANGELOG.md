@@ -1,3 +1,5 @@
+### 5.2.1
+* Fixed bug that rendered DSN for all users for Private GM rolls
 ### 5.2.0
 * Re-implemented compatibility with Midi-QOL and Better Rolls for 5e
 ### 5.1.0

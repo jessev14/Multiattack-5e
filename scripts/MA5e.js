@@ -238,7 +238,7 @@ export default class MA5e {
             for (let i = 0; i < rollArray.length; i++) {
                 for (let j = 0; j < rollArray[i].rolls.length; j++) {
                     if (i === rollArray.length && j === rollArray[i].rolls.length) await game.dice3d.showForRoll(rollArray[i].rolls[j], game.user, true);
-                    else game.dice3d.showForRoll(rollArray[i].rolls[j], game.user, true);
+                    else game.dice3d.showForRoll(rollArray[i].rolls[j], game.user, messageData.rollMode === "roll");
                 }
             }
         }
