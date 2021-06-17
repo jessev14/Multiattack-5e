@@ -324,7 +324,9 @@ export default class MA5e {
         return game.MA5e.multiattack(itemNameArray, rollType, actor);
     }
 
-    brMA5E(itemNameArray, actor) {
+    brMA5E(itemNameArray, actor = canvas.tokens.controlled[0]?.actor) {
+        if (!actor) return ui.notifications.warn("No actor provided or no token selected.") // LOCALIZE
+
         if (!game.settings.get("multiattack-5e", "betterRollsDSN")) {
             Hooks.once("diceSoNiceRollStart", (messageID, context) => {context.blind = true});
         } 
@@ -347,7 +349,9 @@ export default class MA5e {
         card.toMessage();
     }
 
-    async midiMA5e(itemNameArray, actor) {
+    async midiMA5e(itemNameArray, actor = canvas.tokens.controlled[0]?.actor) {
+        if (!actor) return ui.notifications.warn("No actor provided or no token selected.") // LOCALIZE
+
         let count = 0;
         const endCount = itemNameArray.length - 1;
         const itemsArray = [];
