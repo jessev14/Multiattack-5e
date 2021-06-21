@@ -74,7 +74,7 @@ Hooks.once("init", () => {
     });
 });
 
-Hooks.once("setup", () => {
+Hooks.once("ready", () => {
     game.MA5e = new MA5e();
 
     if (core) game.MA5e.coreInit();
