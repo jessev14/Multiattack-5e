@@ -254,7 +254,7 @@ export default class MA5e {
     }
 
     multiattackToolInit() {
-        if (!game.user.isGM || !game.settings.get("multiattack-5e", "playerTool")) return;
+        if (game.user.isGM || !game.settings.get("multiattack-5e", "playerTool")) return;
         Hooks.on("getSceneControlButtons", (controls) => {
             const bar = controls.find(c => c.name === "token");
             bar.tools.push({
