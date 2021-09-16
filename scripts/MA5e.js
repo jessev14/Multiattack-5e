@@ -9,7 +9,7 @@ export default class MA5e {
 
         // Inject extra attack number selector to attack/damage roll configuration dialog
         Hooks.on("renderDialog", async (dialog, html, dialogData) => {
-            if (!(dialog.data.title.includes(game.i18n.localize("DND5E.AttackRoll")) || dialog.data.title.includes(game.i18n.localize("DND5E.DamageRoll")))) return;
+            if (!(dialog.data.title?.includes(game.i18n.localize("DND5E.AttackRoll")) || dialog.data.title?.includes(game.i18n.localize("DND5E.DamageRoll")))) return;
             const snippet = await renderTemplate("modules/multiattack-5e/templates/roll-dialog-snippet.hbs", {});
             html.find("form").append(snippet);
             html[0].style.height = "auto";
@@ -382,7 +382,8 @@ export default class MA5e {
         const items = $(html).find("div.MA5e-multiattack");
         items.each(function () {
             if (!$(this).find(`input[type="checkbox"]`).prop("checked")) return;
-            const num = $(this).find(`input[type="number"]`).val();
+            
+            const num = $(this).find(`input[type="number"]`).val() || 1;
             for (let i = 0; i < num; i++) itemNameArray.push($(this).prop("id"));
         });
 
