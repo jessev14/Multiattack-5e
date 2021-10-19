@@ -165,6 +165,8 @@ export default class MA5e {
     }
 
     async multiattack(itemNameArray, rollType = "attack", actor = null) {
+        if (!itemNameArray.length) return ui.notifications.warn(game.i18n.localize("multiattack.ui.checkOneItem"));
+        
         itemNameArray.sort();
         if (!actor && canvas.tokens.controlled.length !== 1) return ui.notifications.warn(game.i18n.localize("multiattack.ui.selectOneToken"));
         actor = actor || canvas.tokens.controlled[0].actor;

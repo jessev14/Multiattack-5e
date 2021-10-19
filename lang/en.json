@@ -25,6 +25,7 @@
             "enabled": "Enabled"
         },
         "ui": {
+            "checkOneItem": "Check at least one item to roll.",
             "selectOneToken": "Select one token.",
             "setDefault": "Default set for",
             "clearDefault": "Default cleared for"
