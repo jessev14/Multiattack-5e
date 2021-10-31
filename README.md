@@ -32,7 +32,7 @@ Users can perform several attack / damage rolls at once, and the output is conde
 * Select a single token
 * Click the Multiattack tool button in the token layer toolbar on the left (GMs can enable/disable this button for players)
 * Check each item to be included in the roll and input how many of that item's attack/damage to roll
-* Optional: Use the defualt buttnos to save the entire multiattack configuration for subsequent attacks
+* Optional: Use the default buttons to save the entire multiattack configuration for subsequent attacks
 
 The MA5e API has been opened to allow multiattacks to be made programmatically:
 ```js
