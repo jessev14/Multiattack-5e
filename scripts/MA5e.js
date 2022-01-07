@@ -1,11 +1,18 @@
-import D20Roll from "/systems/dnd5e/module/dice/d20-roll.js";
+//import D20Roll from "/systems/dnd5e/module/dice/d20-roll.js";
 
 
 const moduleName = "multiattack-5e";
+/**
 const ADV_MODE = {
     normal: D20Roll.ADV_MODE.NORMAL,
     advantage: D20Roll.ADV_MODE.ADVANTAGE,
     disadvantage: D20Roll.ADV_MODE.DISADVANTAGE,
+};
+ */
+const ADV_MODE = {
+    NORMAL: 0,
+    ADVANTAGE: 1,
+    DISADVANTAGE: -1
 };
 let roller = "core";
 let MA5e;
