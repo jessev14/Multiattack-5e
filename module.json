@@ -11,7 +11,7 @@
   "compatibleCoreVersion": "9",
   "scripts": [],
   "esmodules": [
-    "scripts/ma5e.js"
+    "./scripts/ma5e.js"
   ],
   "styles": [
     "./styles/multiattack-5e.css"
