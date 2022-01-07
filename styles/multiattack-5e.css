@@ -1,6 +1,6 @@
-/*(.dice-result > .totalMA5e {
+.dice-result > .totalMA5e {
     color: rgb(44, 42, 168);
-} */
+}
 
 .MA5e-multiattack {
     display: grid;
@@ -49,4 +49,8 @@
 .MA5e-multiattack-flex > .buttonMA5e {
     background: rgba(0, 0, 0, 0.1);
     border: 2px groove #f0f0e0;
+}
+
+#multiattack-tool-dialog .dialog-buttons {
+    flex-direction: column;
 }

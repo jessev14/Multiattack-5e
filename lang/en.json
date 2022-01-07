@@ -1,6 +1,9 @@
 {
-    "multiattack-5e": {
+    "MA5e": {
         "settings": {
+            "condenseCards": {
+                "name": "Condense Multiple Attack/Damage Rolls"
+            },
             "disableTool": {
                 "name":"Multiattack Tool",
                 "hint": "Enable tool in token control bar."
@@ -24,8 +27,10 @@
             "damageOnly": "Damage rolls only",
             "enabled": "Enabled"
         },
+        "dialog": {
+            "numberOfRolls": "Number of Rolls"
+        },
         "ui": {
-            "checkOneItem": "Check at least one item to roll.",
             "selectOneToken": "Select one token.",
             "setDefault": "Default set for",
             "clearDefault": "Default cleared for"

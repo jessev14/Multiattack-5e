@@ -1,4 +1,4 @@
-{{#each outerRolls}}
+{{#each items}}
 <header class="message-header flexrow">
     <span class="flavor-text">{{this.flavor}}</span>
 </header>
@@ -6,8 +6,8 @@
         <div class="dice-formula">{{this.formula}}</div>
         {{#each this.rolls}}
         <div class="dice-result">
-            {{{this.options.tooltip}}}
-            <h4 class="dice-total {{this.options.highlight}}">{{this.total}}</h4>
+            {{{this.tooltip}}}
+            <h4 class="dice-total {{this.highlight}}">{{this.total}}</h4>
         </div>
         {{/each}}
     </div>
@@ -16,7 +16,7 @@
 <div class="dice-roll">
     <div class="dice-result">
         <br>
-        <h4 class="dice-total totalMA5e">{{ localize "multiattack-5e.chat.total" }}: {{totalDamage}}</h4>
+        <h4 class="dice-total totalMA5e">{{ localize "MA5e.chat.total" }}: {{totalDamage}}</h4>
     </div>
 </div>
 {{/if}}
