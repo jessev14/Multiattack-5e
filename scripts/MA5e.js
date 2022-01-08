@@ -1,14 +1,4 @@
-//import D20Roll from "/systems/dnd5e/module/dice/d20-roll.js";
-
-
 const moduleName = "multiattack-5e";
-/**
-const ADV_MODE = {
-    normal: D20Roll.ADV_MODE.NORMAL,
-    advantage: D20Roll.ADV_MODE.ADVANTAGE,
-    disadvantage: D20Roll.ADV_MODE.DISADVANTAGE,
-};
- */
 const ADV_MODE = {
     NORMAL: 0,
     ADVANTAGE: 1,
@@ -259,7 +249,7 @@ class Multiattack5e {
                     }
 
                     // Call original callback function to initiate prime roll
-                    ogCallback(html, ADV_MODE[vantage]);
+                    ogCallback(html, CONFIG.Dice.D20Roll.ADV_MODE[vantage]);
                 }
             }
         });
@@ -407,7 +397,7 @@ class Multiattack5e {
                     }
 
                     // Call original callback function to initiate prime roll
-                    ogCallback(html, ADV_MODE[vantage]);
+                    ogCallback(html, CONFIG.Dice.D20Roll.ADV_MODE[vantage]);
                 }
             }
         });

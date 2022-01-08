@@ -1,8 +1,6 @@
 import { libWrapper } from "../lib/shim.js";
 
-
-//const moduleName = "multiattack-5e";
-const moduleName = "ma5e";
+const moduleName = "multiattack-5e";
 
 
 Hooks.once("init", () => {
