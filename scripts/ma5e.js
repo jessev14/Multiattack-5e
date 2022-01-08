@@ -1,9 +1,4 @@
 const moduleName = "multiattack-5e";
-const ADV_MODE = {
-    NORMAL: 0,
-    ADVANTAGE: 1,
-    DISADVANTAGE: -1
-};
 let roller = "core";
 let MA5e;
 let MREutils;// CustomRoll;
