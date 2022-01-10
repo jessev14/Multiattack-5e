@@ -570,22 +570,24 @@ class Multiattack5e {
             const items = itemNameArray.map(name => actor.items.getName(name));
             Hooks.on("diceSoNiceRollStart", midiMA5eDSNHide);
             let i = 0;
-            Hooks.once("midi-qol.RollComplete", midiMA5eHook);
-            await items[i].roll()
+            Hooks.once("midi-qol.RollComplete", nextMidiRoll);
+            await items[i].roll();
 
-            async function midiMA5eHook() {
-                if (i >= items.length - 1) {
-                    Hooks.off("diceSoNiceRollStart", midiMA5eDSNHide);
-                    return;
-                }
-
-                await new Promise(resolve => setTimeout(resolve, 800));
-                await items[i].roll();
-                i++;
-            }
 
             function midiMA5eDSNHide(messageID, context) {
                 context.blind = true;
+            }
+            
+            function nextMidiRoll() {
+                (async () => {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
+                    i += 1;
+                    if (i >= items.length) return Hooks.off("diceSoNiceRollStart", midiMA5eDSNHide);
+                    
+                    Hooks.once("midi-qol.RollComplete", nextMidiRoll);
+                    await items[i].roll();
+                })();
             }
         } else if (roller === "br") {
             // Hide DSN based on module setting
