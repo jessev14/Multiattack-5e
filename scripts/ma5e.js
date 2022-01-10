@@ -13,7 +13,7 @@ Hooks.once("init", async () => {
     // Determine active roller modules
     if (game.modules.get("betterrolls5e")?.active) roller = "br";
     //if (roller === "br") CustomRoll = await import("/modules/betterrolls5e/scripts/custom-roll.js");
-    if (game.modules.get("midi-qol")?.active) roller = "midi";
+    if (game.modules.get("midi-qol")?.active && game.settings.get("midi-qol", "EnableWorkflow")) roller = "midi";
     if (game.modules.get("mre-dnd5e")?.active) {
         roller = "mre";
         MREutils = await import("/modules/mre-dnd5e/scripts/utils.mjs");
@@ -164,6 +164,8 @@ class Multiattack5e {
                                     if (consume?.type === "ammo") ammo = item.actor.items.get(consume.target);
                                 }
 
+                                const dsnSetting = game.settings.get(moduleName, "extraAttackDSN");
+
                                 // Use original roll as "prime" roll on which follow-up rolls will be based
                                 const primeRoll = chatMessage.roll;
                                 const rolls = [primeRoll];
@@ -184,8 +186,10 @@ class Multiattack5e {
                                     if (i !== 0) {
                                         const newRoll = await new rollClass(primeRoll.formula, primeRoll.data, rollType === "attack" ? primeRoll.options : {}).evaluate();
                                         rolls.push(newRoll);
-                                        if (game.dice3d) game.dice3d.showForRoll(newRoll, game.user, true, null, game.settings.get("core", "rollMode") === CONST.DICE_ROLL_MODES.BLIND, null, chatMessage.data.speaker);
-                                        if (game.dice3d && i === numberOfRolls - 1) await game.dice3d.showForRoll(newRoll, game.user, true, null, game.settings.get("core", "rollMode") === CONST.DICE_ROLL_MODES.BLIND, null, chatMessage.data.speaker);
+                                        if (game.settings.get(moduleName, "condenseCards") && (dsnSetting === "enabled" || dsnSetting === rollType)) {
+                                            if (game.dice3d) game.dice3d.showForRoll(newRoll, game.user, true, null, game.settings.get("core", "rollMode") === CONST.DICE_ROLL_MODES.BLIND, null, chatMessage.data.speaker);
+                                            if (game.dice3d && i === numberOfRolls - 1) await game.dice3d.showForRoll(newRoll, game.user, true, null, game.settings.get("core", "rollMode") === CONST.DICE_ROLL_MODES.BLIND, null, chatMessage.data.speaker);
+                                        }
                                     }
 
                                     // If applicable, update ammo quantity
@@ -229,12 +233,16 @@ class Multiattack5e {
                                     });
                                 } else {
                                     // If "condenseCards" module setting disabled, generate individual chat messages for each roll
+                                    let hk;
+                                    if (game.dice3d && (dsnSetting === "disabled" || dsnSetting !== rollType)) hk = Hooks.on("diceSoNiceRollStart", (id, context) => { context.blind = true });
                                     for (const roll of rolls) {
                                         await roll.toMessage({
                                             speaker: chatMessage.data.speaker,
                                             flags: chatMessage.data.flags
                                         });
                                     }
+                                    if (hk) Hooks.off("diceSoNiceRollStart", hk);
+
                                 }
                             })();
 
@@ -568,6 +576,8 @@ class Multiattack5e {
             return items;
         } else if (roller === "midi") {
             const items = itemNameArray.map(name => actor.items.getName(name));
+            let hk;
+            if (game.dice3d) hk = Hooks.on("diceSoNiceRollStart", midiMA5eDSNHide);
             Hooks.on("diceSoNiceRollStart", midiMA5eDSNHide);
             let i = 0;
             Hooks.once("midi-qol.RollComplete", nextMidiRoll);
@@ -583,7 +593,10 @@ class Multiattack5e {
                     await new Promise(resolve => setTimeout(resolve, 1000));
 
                     i += 1;
-                    if (i >= items.length) return Hooks.off("diceSoNiceRollStart", midiMA5eDSNHide);
+                    if (i >= items.length) {
+                        if (hk) Hooks.off("diceSoNiceRollStart", hk);
+                        return;
+                    }
                     
                     Hooks.once("midi-qol.RollComplete", nextMidiRoll);
                     await items[i].roll();
