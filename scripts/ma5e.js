@@ -18,7 +18,7 @@ Hooks.once("init", async () => {
         roller = "mre";
         MREutils = await import("/modules/mre-dnd5e/scripts/utils.mjs");
     }
-    
+
     // Register module settings
     MA5e.registerSettings();
 });
@@ -151,98 +151,86 @@ class Multiattack5e {
                         Hooks.once("preCreateChatMessage", (chatMessage, chatMessageData, options, userID) => {
                             (async () => {
                                 // Gather roll, actor, and item information from chat message data
+                                const primeRoll = chatMessage.roll;
                                 const tokenID = chatMessage.data.speaker.token;
                                 const actorID = chatMessage.data.speaker.actor;
                                 const actor = canvas.tokens.get(tokenID)?.actor || game.actors.get(actorID);
                                 const rollType = chatMessage.getFlag("dnd5e", "roll.type");
                                 const itemID = chatMessage.getFlag("dnd5e", "roll.itemId");
-                                // If rollType === "attack", gather ammo data
                                 const item = actor.items.get(itemID);
-                                let consume, ammo;
+                                let rollMethod, rollOptions;
                                 if (rollType === "attack") {
-                                    consume = item.data.data.consume;
-                                    if (consume?.type === "ammo") ammo = item.actor.items.get(consume.target);
+                                    rollMethod = CONFIG.Item.documentClass.prototype.rollAttack;
+                                    rollOptions = {
+                                        fastForward: true,
+                                        chatMessage: false,
+                                        advantage: vantage === "advantage",
+                                        disadvantage: vantage === "disadvantage"
+                                    };
+                                } else {
+                                    rollMethod = CONFIG.Item.documentClass.prototype.rollDamage;
+                                    rollOptions = {
+                                        critical: primeRoll.isCritical,
+                                        options: {
+                                            fastForward: true,
+                                            chatMessage: false
+                                        }
+                                    };
                                 }
 
+                                const rollArray = [primeRoll];
+                                for (let i = 1; i < numberOfRolls; i++) {
+                                    const itemRoll = await rollMethod.call(item, rollOptions);
+                                    if (!itemRoll) break;
+                                    rollArray.push(itemRoll);
+                                }
                                 const dsnSetting = game.settings.get(moduleName, "extraAttackDSN");
-
-                                // Use original roll as "prime" roll on which follow-up rolls will be based
-                                const primeRoll = chatMessage.roll;
-                                const rolls = [primeRoll];
-                                for (let i = 0; i < numberOfRolls; i++) {
-                                    // If applicable, ensure actor has enough ammo to commit to next attack roll
-                                    if (ammo?.data && rollType === "attack") {
-                                        const ammoQty = ammo.data.data.quantity;
-                                        const consumeAmount = consume.amount ?? 0;
-                                        if (consumeAmount > ammoQty) {
-                                            ui.notifications.warn("Not enough ammo for remaining attacks!") // LOCALIZE; and specify lacking ammo
-                                            break;
-                                        }
-                                    }
-
-                                    // Using prime roll data, re-create rolls
-                                    //if (i !== 0) rolls.push(await primeRoll.reroll()); // can't use .reroll() for damage rolls because crit damage gets doubled up
-                                    const rollClass = rollType === "attack" ? CONFIG.Dice.D20Roll : CONFIG.Dice.DamageRoll;
-                                    if (i !== 0) {
-                                        const newRoll = await new rollClass(primeRoll.formula, primeRoll.data, rollType === "attack" ? primeRoll.options : {}).evaluate();
-                                        rolls.push(newRoll);
-                                        if (game.settings.get(moduleName, "condenseCards") && (dsnSetting === "enabled" || dsnSetting === rollType)) {
-                                            if (game.dice3d) game.dice3d.showForRoll(newRoll, game.user, true, null, game.settings.get("core", "rollMode") === CONST.DICE_ROLL_MODES.BLIND, null, chatMessage.data.speaker);
-                                            if (game.dice3d && i === numberOfRolls - 1) await game.dice3d.showForRoll(newRoll, game.user, true, null, game.settings.get("core", "rollMode") === CONST.DICE_ROLL_MODES.BLIND, null, chatMessage.data.speaker);
-                                        }
-                                    }
-
-                                    // If applicable, update ammo quantity
-                                    if (rollType === "atttack") continue;
-                                    const usage = item._getUsageUpdates({ consumeResource: true });
-                                    const ammoUpdate = usage.resourceUpdates || {};
-                                    if (!isObjectEmpty(ammoUpdate)) await ammo?.update(ammoUpdate);
-                                }
-
                                 if (game.settings.get(moduleName, "condenseCards")) {
-                                    // If "condenseCards" module setting is enabled, create single custom chat card with all roll information
-
-                                    let rollSum = 0;
-                                    // Prepare individual roll information for custom template
-                                    for (const roll of rolls) {
+                                    for (const roll of rollArray) {
                                         roll.tooltip = await roll.getTooltip();
-                                        if (rollType === "attack") roll.highlight = roll.terms[0].total >= roll.options.critical ? "critical" : roll.terms[0].total === 1 ? "fumble" : "";
-                                        rollSum += roll.total;
+                                        if (rollType === "attack") {
+                                            roll.highlight = roll.dice[0].total >= roll.options.critical
+                                                ? "critical"
+                                                : roll.dice[0].total <= roll.options.fumble
+                                                    ? "fumble"
+                                                    : "";
+                                        }
                                     }
-                                    // Prepare chat card information relevant to the item roll is based on
-                                    const item = {
-                                        flavor: chatMessage.data.flavor,
-                                        formula: rolls[0].formula,
-                                        rolls
-                                    };
-                                    // Convert the item information into a generic format compatible with the custom template
-                                    const templateData = {
-                                        items: [item]
-                                    };
-                                    if (rollType === "damage") templateData.totalDamage = rollSum;
+                                    const pool = PoolTerm.fromRolls(rollArray);
+                                    const roll = Roll.fromTerms([pool]);
 
-                                    // Render custom chat card template and create chat message
+                                    const templateData = {
+                                        items: [{
+                                            flavor: chatMessage.data.flavor,
+                                            formula: rollArray[0].formula,
+                                            rolls: rollArray
+                                        }]
+                                    };
+                                    if (rollType === "damage") templateData.totalDamage = rollArray.reduce((acc, r) => acc += r.total, 0);
                                     const content = await renderTemplate(`modules/${moduleName}/templates/condensed-card.hbs`, templateData);
-                                    ChatMessage.create({
-                                        content,
+
+                                    if (game.dice3d && (dsnSetting === "disabled" || dsnSetting !== rollType) && dsnSetting !== "enabled") Hooks.once("diceSoNiceRollStart", (id, context) => { context.blind = true });
+
+                                    await ChatMessage.create({
                                         speaker: chatMessage.data.speaker,
-                                        flags: chatMessage.data.flags,
                                         type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-                                        roll: await new Roll(`${rollSum}`).evaluate(), // This allows the total damage to be applied to tokens via chat card context menu
-                                        rollMode: game.settings.get("core", "rollMode")
+                                        content,
+                                        roll,
+                                        rollMode: primeRoll.options.rollMode,
+                                        flags: chatMessage.data.flags
                                     });
                                 } else {
-                                    // If "condenseCards" module setting disabled, generate individual chat messages for each roll
                                     let hk;
-                                    if (game.dice3d && (dsnSetting === "disabled" || dsnSetting !== rollType)) hk = Hooks.on("diceSoNiceRollStart", (id, context) => { context.blind = true });
-                                    for (const roll of rolls) {
+                                    if (game.dice3d && (dsnSetting === "disabled" || dsnSetting !== rollType) && dsnSetting !== "enabled") hk = Hooks.on("diceSoNiceRollStart", (id, context) => { context.blind = true });
+
+                                    for (const roll of rollArray) {
                                         await roll.toMessage({
                                             speaker: chatMessage.data.speaker,
                                             flags: chatMessage.data.flags
                                         });
                                     }
-                                    if (hk) Hooks.off("diceSoNiceRollStart", hk);
 
+                                    if (hk) Hooks.off("diceSoNiceRollStart", hk);
                                 }
                             })();
 
@@ -252,7 +240,11 @@ class Multiattack5e {
                     }
 
                     // Call original callback function to initiate prime roll
-                    ogCallback(html, CONFIG.Dice.D20Roll.ADV_MODE[vantage]);
+                    const rollType = title.includes(game.i18n.localize("DND5E.AttackRoll")) ? "attack" : "damage";
+                    let vantageMode;
+                    if (rollType === "attack") vantageMode = CONFIG.Dice.D20Roll.ADV_MODE[vantage];
+                    else vantageMode = vantage === "critical";
+                    ogCallback(html, vantageMode);
                 }
             }
         });
@@ -407,7 +399,7 @@ class Multiattack5e {
     }
 
     // Multiattack Dialog
-    static async multiattackToolDialog(){
+    static async multiattackToolDialog() {
         const token = canvas.tokens.controlled[0];
         if (canvas.tokens.controlled.length !== 1) return ui.notifications.warn(game.i18n.localize("MA5e.ui.selectOneToken"));
 
@@ -470,8 +462,8 @@ class Multiattack5e {
                 // Add onclick handlers for set/clear default buttons
                 html.find("#setDefaultButton").click(setDefault);
                 html.find("#clearDefaultButton").click(clearDefault);
-                
-                function setDefault() {                
+
+                function setDefault() {
                     const itemIDarray = [];
                     const items = $(html).find("div.MA5e-multiattack");
                     items.each(function () {
@@ -483,8 +475,8 @@ class Multiattack5e {
                     token.document.setFlag(moduleName, "defaultMultiattack", itemIDarray);
                     ui.notifications.info(`${game.i18n.localize("MA5e.ui.setDefault")} ${token.name}.`);
                 }
-                
-                function clearDefault() {               
+
+                function clearDefault() {
                     token.document.unsetFlag(moduleName, "defaultMultiattack");
 
                     const checkboxes = document.getElementsByClassName("dialog-checkbox");
@@ -493,7 +485,7 @@ class Multiattack5e {
                         checkboxes[i].checked = false;
                         inputs[i].value = null;
                     }
-                    
+
                     ui.notifications.warn(`${game.i18n.localize("MA5e.ui.clearDefault")} ${token.name}`);
                 }
 
@@ -503,7 +495,7 @@ class Multiattack5e {
 
                 const itemIDarray = [];
                 const items = html.find(`div.MA5e-multiattack`);
-                items.each(function() {
+                items.each(function () {
                     if (!$(this).find(`input[type="checkbox"]`).prop("checked")) return;
                     const num = $(this).find(`input[type="number"]`).val() || 1;
                     for (let i = 0; i < num; i++) itemIDarray.push($(this).prop("id"));
@@ -521,7 +513,7 @@ class Multiattack5e {
     // Utility
     static async multiattack({ actor, itemNameArray, rollType = "attack", rollMode = null }) {
         if (!actor) actor = canvas.tokens.controlled[0];
-        if (!actor) return; 
+        if (!actor) return;
         if (!itemNameArray.length) return;
         if (roller === "core") {
             const items = [];
@@ -587,7 +579,7 @@ class Multiattack5e {
             function midiMA5eDSNHide(messageID, context) {
                 context.blind = true;
             }
-            
+
             function nextMidiRoll() {
                 (async () => {
                     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -597,7 +589,7 @@ class Multiattack5e {
                         if (hk) Hooks.off("diceSoNiceRollStart", hk);
                         return;
                     }
-                    
+
                     Hooks.once("midi-qol.RollComplete", nextMidiRoll);
                     await items[i].roll();
                 })();

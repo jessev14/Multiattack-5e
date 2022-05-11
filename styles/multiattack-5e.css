@@ -1,3 +1,28 @@
+.MA5e-dice-total {
+    flex: 0 0 100%;
+    position: relative;
+    margin: 0;
+    line-height: 24px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border-light-2);
+    border-radius: 3px;
+    box-shadow: 0 0 2px #fff inset;
+    word-break: break-all;
+
+    flex: 0;
+    font-size: var(--font-size-20);
+    font-weight: bold;
+}
+
+.MA5e-dice-total.critical {
+    color: green;
+}
+
+.MA5e-dice-total.fumble {
+    color: red;
+}
+
 .dice-result > .totalMA5e {
     color: rgb(44, 42, 168);
 }
