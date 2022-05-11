@@ -150,6 +150,8 @@ class Multiattack5e {
                         // Before making prime roll, prepare to intercept chat message creation and prevent it
                         Hooks.once("preCreateChatMessage", (chatMessage, chatMessageData, options, userID) => {
                             (async () => {
+                                await new Promise(resolve => setTimeout(() => resolve(), 100)); // Short delay to allow prime roll to complete usage/ammo updates
+
                                 // Gather roll, actor, and item information from chat message data
                                 const primeRoll = chatMessage.roll;
                                 const tokenID = chatMessage.data.speaker.token;
@@ -158,9 +160,8 @@ class Multiattack5e {
                                 const rollType = chatMessage.getFlag("dnd5e", "roll.type");
                                 const itemID = chatMessage.getFlag("dnd5e", "roll.itemId");
                                 const item = actor.items.get(itemID);
-                                let rollMethod, rollOptions;
+                                let rollOptions;
                                 if (rollType === "attack") {
-                                    rollMethod = CONFIG.Item.documentClass.prototype.rollAttack;
                                     rollOptions = {
                                         fastForward: true,
                                         chatMessage: false,
@@ -168,7 +169,6 @@ class Multiattack5e {
                                         disadvantage: vantage === "disadvantage"
                                     };
                                 } else {
-                                    rollMethod = CONFIG.Item.documentClass.prototype.rollDamage;
                                     rollOptions = {
                                         critical: primeRoll.isCritical,
                                         options: {
@@ -180,8 +180,11 @@ class Multiattack5e {
 
                                 const rollArray = [primeRoll];
                                 for (let i = 1; i < numberOfRolls; i++) {
-                                    const itemRoll = await rollMethod.call(item, rollOptions);
+                                    const itemRoll = rollType === "attack"
+                                        ? await item.rollAttack(rollOptions)
+                                        : await item.rollDamage(rollOptions);
                                     if (!itemRoll) break;
+
                                     rollArray.push(itemRoll);
                                 }
                                 const dsnSetting = game.settings.get(moduleName, "extraAttackDSN");
@@ -244,7 +247,7 @@ class Multiattack5e {
                     let vantageMode;
                     if (rollType === "attack") vantageMode = CONFIG.Dice.D20Roll.ADV_MODE[vantage];
                     else vantageMode = vantage === "critical";
-                    ogCallback(html, vantageMode);
+                    return ogCallback(html, vantageMode);
                 }
             }
         });
