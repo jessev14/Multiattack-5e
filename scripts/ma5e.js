@@ -169,7 +169,7 @@ class Multiattack5e {
                                     };
                                 } else if (roller === "mre") {
                                     rollOptions = {
-                                        formulaGroup: parseInt(chatMessage.data.flags["mre-dnd5e.formulaGroup"]),
+                                        formulaGroup: parseInt(chatMessage.data.flags["mre-dnd5e.formulaGroup"]) || 0,
                                         critical: chatMessage.data.flavor.includes(game.i18n.localize("DND5E.Critical")),
                                         fastForward: true,
                                     };
