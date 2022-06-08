@@ -245,7 +245,7 @@ class Multiattack5e {
                             })();
 
                             // Return false in preCreateChatMessage hook to prevent chat card from being created
-                            return roller === "mre";
+                            return roller === "mre" && rollType === "damage";
                         });
                     }
 
