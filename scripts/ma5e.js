@@ -433,7 +433,6 @@ class Multiattack5e {
             const items = itemNameArray.map(name => actor.items.getName(name));
             let hk;
             if (game.dice3d) hk = Hooks.on("diceSoNiceRollStart", midiMA5eDSNHide);
-            Hooks.on("diceSoNiceRollStart", midiMA5eDSNHide);
             let i = 0;
             Hooks.once("midi-qol.RollComplete", nextMidiRoll);
             await items[i].roll();
