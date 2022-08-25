@@ -28,7 +28,7 @@ Hooks.once("setup", () => {
 });
 
 Hooks.once("ready", () => {
-    MA5e.registerCoreReadyHooks();
+    if (roller === "core") MA5e.registerCoreReadyHooks();
 });
 
 
@@ -432,7 +432,7 @@ class Multiattack5e {
         } else if (roller === "midi") {
             const items = itemNameArray.map(name => actor.items.getName(name));
             let hk;
-            if (game.dice3d) hk = Hooks.on("diceSoNiceRollStart", midiMA5eDSNHide);
+            //if (game.dice3d) hk = Hooks.on("diceSoNiceRollStart", midiMA5eDSNHide);
             let i = 0;
             Hooks.once("midi-qol.RollComplete", nextMidiRoll);
             await items[i].roll();
