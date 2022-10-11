@@ -2,19 +2,36 @@
   "name": "multiattack-5e",
   "title": "Multiattack 5e",
   "description": "",
-  "author": "enso#0361",
-  "authors": [],
-  "url": "https://github.com/jessev14/Multiattack-5e",
-  "flags": {},
+  "authors": [
+    {
+      "name": "enso",
+      "discord": "enso#0361",
+      "flags": {}
+    }
+  ],
   "version": "5.0.2",
-  "minimumCoreVersion": "9",
-  "compatibleCoreVersion": "9",
+  "compatibility": {
+    "minimum": "10",
+    "verified": "10"
+  },
+  "relationships": {
+    "systems": [
+        {
+            "id": "dnd5e",
+            "type": "system",
+            "compatibility": {
+                "minimum": "2.0.0"
+            }
+        }
+    ]
+  },
+  "flags": {},
   "scripts": [],
   "esmodules": [
-    "./scripts/ma5e.js"
+    "./scripts/main.js"
   ],
   "styles": [
-    "./styles/multiattack-5e.css"
+    "./styles/style.css"
   ],
   "languages": [
     {
@@ -24,11 +41,10 @@
     }
   ],
   "packs": [],
-  "system": [],
-  "dependencies": [],
   "socket": false,
-  "manifest": "https://github.com/jessev14/Multiattack-5e/releases/latest/download/module.json",
-  "download": "https://github.com/jessev14/Multiattack-5e/releases/download/5.0.2/MA5e.zip",
+  "url": "https://github.com/jessev14/Multiattack-5e",
+  "manifest": "",
+  "download": "",
   "protected": false,
   "coreTranslation": false
 }
