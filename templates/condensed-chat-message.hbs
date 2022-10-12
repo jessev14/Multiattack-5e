@@ -1,0 +1,21 @@
+{{#each items as |item id|}}
+<header class="message-header flexrow">
+    <span class="flavor-text">{{item.flavor}}</span>
+</header>
+<div class="dice-roll">
+    <div class="dice-formula">{{item.formula}}</div>
+    {{#each item.rolls as |roll id|}}
+    <div class="dice-result">
+        {{{roll.tooltip}}}
+        <h4 class="multiattack-5e-dice-total {{roll.highlight}}">{{roll.total}}</h4>
+    </div>
+    {{/each}}
+</div>
+{{/each}}
+{{#if totalDamage}}
+<div class="dice-roll">
+    <div class="dice-result">
+        <h4 class="dice-total multiattack-5e-total">{{totalDamage}}</h4>
+    </div>
+</div>
+{{/if}}

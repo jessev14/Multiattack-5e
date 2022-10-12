@@ -1,4 +1,4 @@
-.MA5e-dice-total {
+.multiattack-5e-dice-total {
     flex: 0 0 100%;
     position: relative;
     margin: 0;
@@ -15,25 +15,25 @@
     font-weight: bold;
 }
 
-.MA5e-dice-total.critical {
+.multiattack-5e-dice-total.critical {
     color: green;
 }
 
-.MA5e-dice-total.fumble {
+.multiattack-5e-dice-total.fumble {
     color: red;
 }
 
-.dice-result > .totalMA5e {
+.dice-result > .multiattack-5e-total {
     color: rgb(44, 42, 168);
 }
 
-.MA5e-multiattack {
+.multiattack-5e-item {
     display: grid;
     grid-template-columns: 30px 105px 60px 20px;
     column-gap: 5px;
 }
 
-.MA5e-multiattack > label > img.imgMA5e {
+.multiattack-5e-item > label > img.multiattack-5e-img {
     width: 30px;
     height: 30px;
     margin: 0px 5px 0px 0px;
@@ -44,7 +44,7 @@
     align-self: center;
 }
 
-.MA5e-multiattack > label.labelMA5e {
+.multiattack-5e-item > label.multiattack-5e-label {
     grid-column-start: 2;
     grid-column-end: 3;
     align-self: center;
@@ -54,24 +54,24 @@
     overflow: hidden;
 }
 
-.MA5e-multiattack > input.inputMA5e {
+.multiattack-5e-item > input.multiattack-5e-input {
     grid-column-start: 3;
     grid-column-end: 4;
     align-self: center;
 }
 
-.MA5e-multiattack > input.dialog-checkbox {
+.multiattack-5e-item > input.multiattack-5e-checkbox {
     grid-column-start: 4;
     grid-column-end: 5;
     align-self: center;
 }
 
-.MA5e-multiattack-flex {
+.multiattack-5e-tool-flex {
     display: flex;
     align-items: center;
 } 
 
-.MA5e-multiattack-flex > .buttonMA5e {
+.multiattack-5e-tool-flex .multiattack-5e-button {
     background: rgba(0, 0, 0, 0.1);
     border: 2px groove #f0f0e0;
 }

@@ -1,15 +1,14 @@
 {
-  "name": "multiattack-5e",
+  "id": "multiattack-5e",
   "title": "Multiattack 5e",
   "description": "",
   "authors": [
     {
       "name": "enso",
-      "discord": "enso#0361",
-      "flags": {}
+      "discord": "enso#0361"
     }
   ],
-  "version": "5.0.2",
+  "version": "6.0.0",
   "compatibility": {
     "minimum": "10",
     "verified": "10"
@@ -37,14 +36,10 @@
     {
       "lang": "en",
       "name": "English",
-      "path": "lang/en.json"
+      "path": "./languages/en.json"
     }
   ],
-  "packs": [],
-  "socket": false,
   "url": "https://github.com/jessev14/Multiattack-5e",
   "manifest": "",
-  "download": "",
-  "protected": false,
-  "coreTranslation": false
+  "download": ""
 }

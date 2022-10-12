@@ -1,26 +1,26 @@
 {
-    "MA5e": {
+    "multiattack-5e": {
         "settings": {
-            "condenseCards": {
+            "condenseChatMessagesEnabled": {
                 "name": "Condense Multiple Attack/Damage Rolls"
             },
-            "disableTool": {
+            "multiattackToolEnabled": {
                 "name":"Multiattack Tool",
                 "hint": "Enable tool in token control bar."
             },
-            "playerTool": {
+            "playerToolEnabled": {
                 "name": "Multiattack Tool For Players" ,
                 "hint": "Requires \"Multiattack Tool\" setting enabled."
             },
             "extraAttackDSN": {
-                "name": "Animate DsN! for Extra Attacks",
+                "name": "DsN! for Extra Attacks",
                 "hint": "Will not affect single attack/damage rolls."
             },
             "multiattackDSN": {
-                "name": "Animate DsN! for Multiattacks"
+                "name": "DsN! for Multiattacks"
             },
             "betterRollsDSN": {
-                "name": "Animate DsN! for Better Rolls"
+                "name": "DsN! for Better Rolls"
             },
             "disabled": "Disabled",
             "attackOnly": "Attack rolls only",
