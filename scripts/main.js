@@ -131,7 +131,7 @@ Hooks.on('renderDialog', async (dialog, $html, appData) => {
                     });
                 }
 
-                // Prepare to intercept prime roll to pass itemIDarray to Multiattack5e.multiattack.
+                // Prepare to intercept prime roll to create itemIDarray and pass to Multiattack5e.multiattack.
                 Hooks.once(`dnd5e.${hook}`, async (item, primeRoll, ammoUpdate) => {
                     const itemIDarray = [];
                     for (let i = 1; i < numberOfRolls; i++) itemIDarray.push(item.id);
@@ -166,7 +166,6 @@ Hooks.on('renderDialog', async (dialog, $html, appData) => {
 
 
 class Multiattack5e {
-
     static async multiattack({
         actor,
         itemNameArray = [], itemIDarray = [], chatMessage = true, messageData, primeRoll,
@@ -215,6 +214,7 @@ class Multiattack5e {
         if (primeRoll) rolls.push(primeRoll);
         for (const id of itemArray) {
             const item = isIDs ? actor.items.get(id) : actor.items.getName(id);
+            await delay(100); // Short delay to allow previous roll to complete ammoUpdate.
             const r = await rollMethod.call(item, rollOptions);
             if (r) {
                 r.id = id;
@@ -225,7 +225,6 @@ class Multiattack5e {
                 rolls.push(r);
             }
 
-            await delay(100); // Short delay to allow roll to complete ammoUpdate.
         }
         Hooks.off(`dnd5e.${preHook}`, hk);
 
@@ -374,10 +373,8 @@ class Multiattack5e {
             close: async ([html]) => {
                 if (!rollType) return;
 
-                // Build itemIDarray.
+                // Build itemIDarray and send to Multiattack5e.multiattack.
                 const itemIDarray = toolDataToItemIDarray(html);
-
-                // Send itemIDarray to Multiattack5e.multiattack.
                 await ma5e.multiattack({
                     actor,
                     itemIDarray,
