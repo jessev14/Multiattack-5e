@@ -264,9 +264,12 @@ class Multiattack5e {
         const content = await renderTemplate(`modules/${moduleID}/templates/condensed-chat-message.hbs`, templateData);
         messageData.content = content;
 
-        // Compatibility with Semi-Private Rolls.
         messageData.flags = {
-            'semi-private-rolls': {
+            [moduleID]: {
+                isMultiattack: true,
+            },
+            'semi-private-rolls': { // Compatibility with Semi-Private Rolls.
+
                 flavor: messageData.flavor
             }
         };
