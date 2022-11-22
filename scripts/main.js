@@ -1,7 +1,6 @@
 const moduleID = 'multiattack-5e';
 let roller = 'core';
 let ma5e;
-let betterTooltips = false;
 
 const logg = x => console.log(x);
 
@@ -16,9 +15,6 @@ Hooks.once('init', () => {
     // Open module API.
     game.modules.get(moduleID).api = Multiattack5e;
     ma5e = game.modules.get(moduleID).api;
-
-    // Determine other module status.
-    betterTooltips = game.modules.get('better-dice-tooltips')?.active;
 
     // Register module settings.
     game.settings.register(moduleID, 'condenseChatMessagesEnabled', {
