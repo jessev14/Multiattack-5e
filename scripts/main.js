@@ -16,6 +16,9 @@ Hooks.once('init', () => {
     game.modules.get(moduleID).api = Multiattack5e;
     ma5e = game.modules.get(moduleID).api;
 
+    // Determine active roller modules
+    if (game.modules.get("ready-set-roll-5e")?.active) roller = "rsr";
+
     // Register module settings.
     game.settings.register(moduleID, 'condenseChatMessagesEnabled', {
         name: ma5eLocalize('settings.condenseChatMessagesEnabled.name'),
@@ -70,6 +73,15 @@ Hooks.once('init', () => {
             enabled: ma5eLocalize('settings.enabled'),
         },
         default: 'enabled'
+    });
+
+    game.settings.register(moduleID, 'readySetRollDSN', {
+        name: ma5eLocalize('settings.readySetRollDSN.name'),
+        hint: ma5eLocalize('settings.readySetRollDSN.hint'),
+        scope: 'world',
+        config: game.modules.get('dice-so-nice')?.active && game.modules.get('ready-set-roll-5e')?.active,
+        type: Boolean,
+        default: true
     });
 
 });
@@ -179,115 +191,126 @@ class Multiattack5e {
         const itemArray = isIDs ? itemIDarray : itemNameArray;
         if (!itemArray.length) return;
 
-        // Assume messageData if none provided.
-        if (!messageData) {
-            messageData = {
-                speaker: ChatMessage.getSpeaker({ actor }),
-                type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-            };
-        }
-
-        // Build array of rolls.
-        const rollMethod = isAttackRoll ? CONFIG.Item.documentClass.prototype.rollAttack : CONFIG.Item.documentClass.prototype.rollDamage;
-        const condenseChatMessages = game.settings.get(moduleID, 'condenseChatMessagesEnabled');
-        let rollOptions;
-        const commonRollOptions = {
-            fastForward: true,
-            chatMessage: !condenseChatMessages // Prevent extra roll chat messages if condenseChatMessages enabled.
-        };
-        if (isAttackRoll) {
-            rollOptions = commonRollOptions;
-            rollOptions.advantage = vantage === 'advantage';
-            rollOptions.disadvantage = vantage === 'disadvantage';
-        } else {
-            rollOptions = {
-                critical: isCritical,
-                options: commonRollOptions
-            };
-        }
-        const preHook = isAttackRoll ? 'preRollAttack' : 'preRollDamage';
-        const hk = Hooks.on(`dnd5e.${preHook}`, (item, rollConfig) => {
-            if (sitBonus) rollConfig.parts.push(sitBonus);
-        });
-        let rollOrder = 1;
-        const rolls = [];
-        if (primeRoll) rolls.push(primeRoll);
-        for (const id of itemArray) {
-            const item = isIDs ? actor.items.get(id) : actor.items.getName(id);
-            await delay(100); // Short delay to allow previous roll to complete ammoUpdate.
-            const r = await rollMethod.call(item, rollOptions);
-            if (r) {
-                r.id = id;
-                if (rollMode === 'publicroll' && isExtraAttack) {
-                    r.dice[0].options.rollOrder = rollOrder;
-                    rollOrder++;
-                }
-                rolls.push(r);
-            }
-
-        }
-        Hooks.off(`dnd5e.${preHook}`, hk);
-
-        // Build templateData for rendering custom condensed chat message template.
-        const templateData = {
-            items: {}
-        };
-        for (const roll of rolls) {
-            roll.tooltip = await roll.getTooltip();
-            if (isAttackRoll) {
-                if (roll.isCritical) roll.highlight = 'critical';
-                else if (roll.isFumble) roll.highlight = 'fumble';
-                else roll.highlight = '';
-            }
-            const { id }  = roll;
-            if (!templateData.items[id]) {
-                templateData.items[id] = {
-                    flavor: roll.options.flavor,
-                    formula: roll.formula,
-                    rolls: [roll]
+        if (roller === 'core') {
+            // Assume messageData if none provided.
+            if (!messageData) {
+                messageData = {
+                    speaker: ChatMessage.getSpeaker({ actor }),
+                    type: CONST.CHAT_MESSAGE_TYPES.ROLL,
                 };
-                if (roll.hasAdvantage) templateData.items[id].flavor += ` (${game.i18n.localize("DND5E.Advantage")})`;
-                if (roll.hasDisadvantage) templateData.items[id].flavor += ` (${game.i18n.localize("DND5E.Disadvantage")})`;
-            } else templateData.items[id].rolls.push(roll);
-        }
-
-        // Subsequent processing only applies to condensed chat messages.
-        if (!condenseChatMessages) return rolls;
-
-        // Attach rolls array to messageData for DsN integration and total damage application.
-        messageData.rolls = rolls;
-
-        // Calculate total damage if damage roll.
-        if (!isAttackRoll) templateData.totalDamage = rolls.reduce((acc, current) => { return acc += current.total }, 0);
-
-        // Render template.
-        const content = await renderTemplate(`modules/${moduleID}/templates/condensed-chat-message.hbs`, templateData);
-        messageData.content = content;
-
-        messageData.flags = {
-            [moduleID]: {
-                isMultiattack: true,
-            },
-            'semi-private-rolls': { // Compatibility with Semi-Private Rolls.
-
-                flavor: messageData.flavor
             }
-        };
-        // Flavor is already included in custom template.
-        delete messageData.flavor;
 
-        // Conditionally hide DsN based on extraAttackDSN setting.
-        const dsn = isExtraAttack 
-            ? game.settings.get(moduleID, 'extraAttackDSN')
-            : game.settings.get(moduleID, 'multiattackDSN');
-        if (dsn !== 'enabled' && (extraAttackDSN === 'disabled' || dsn !== rollType)) {
-            Hooks.once('diceSoNiceRollStart', (id, context) => { context.blind = true });
+            // Build array of rolls.
+            const rollMethod = isAttackRoll ? CONFIG.Item.documentClass.prototype.rollAttack : CONFIG.Item.documentClass.prototype.rollDamage;
+            const condenseChatMessages = game.settings.get(moduleID, 'condenseChatMessagesEnabled');
+            let rollOptions;
+            const commonRollOptions = {
+                fastForward: true,
+                chatMessage: !condenseChatMessages // Prevent extra roll chat messages if condenseChatMessages enabled.
+            };
+            if (isAttackRoll) {
+                rollOptions = commonRollOptions;
+                rollOptions.advantage = vantage === 'advantage';
+                rollOptions.disadvantage = vantage === 'disadvantage';
+            } else {
+                rollOptions = {
+                    critical: isCritical,
+                    options: commonRollOptions
+                };
+            }
+            const preHook = isAttackRoll ? 'preRollAttack' : 'preRollDamage';
+            const hk = Hooks.on(`dnd5e.${preHook}`, (item, rollConfig) => {
+                if (sitBonus) rollConfig.parts.push(sitBonus);
+            });
+            let rollOrder = 1;
+            const rolls = [];
+            if (primeRoll) rolls.push(primeRoll);
+            for (const id of itemArray) {
+                const item = isIDs ? actor.items.get(id) : actor.items.getName(id);
+                const r = await rollMethod.call(item, rollOptions);
+                if (r) {
+                    r.id = id;
+                    if (rollMode === 'publicroll' && isExtraAttack) {
+                        r.dice[0].options.rollOrder = rollOrder;
+                        rollOrder++;
+                    }
+                    rolls.push(r);
+                }
+
+                await delay(100); // Short delay to allow roll to complete ammoUpdate.
+            }
+            Hooks.off(`dnd5e.${preHook}`, hk);
+
+            // Build templateData for rendering custom condensed chat message template.
+            const templateData = {
+                items: {}
+            };
+            for (const roll of rolls) {
+                roll.tooltip = await roll.getTooltip();
+                if (isAttackRoll) {
+                    if (roll.isCritical) roll.highlight = 'critical';
+                    else if (roll.isFumble) roll.highlight = 'fumble';
+                    else roll.highlight = '';
+                }
+                const { id }  = roll;
+                if (!templateData.items[id]) {
+                    templateData.items[id] = {
+                        flavor: roll.options.flavor,
+                        formula: roll.formula,
+                        rolls: [roll]
+                    };
+                    if (roll.hasAdvantage) templateData.items[id].flavor += ` (${game.i18n.localize("DND5E.Advantage")})`;
+                    if (roll.hasDisadvantage) templateData.items[id].flavor += ` (${game.i18n.localize("DND5E.Disadvantage")})`;
+                } else templateData.items[id].rolls.push(roll);
+            }
+
+            // Subsequent processing only applies to condensed chat messages.
+            if (!condenseChatMessages) return rolls;
+
+            // Attach rolls array to messageData for DsN integration and total damage application.
+            messageData.rolls = rolls;
+
+            // Calculate total damage if damage roll.
+            if (!isAttackRoll) templateData.totalDamage = rolls.reduce((acc, current) => { return acc += current.total }, 0);
+
+            // Render template.
+            const content = await renderTemplate(`modules/${moduleID}/templates/condensed-chat-message.hbs`, templateData);
+            messageData.content = content;
+
+            // Compatibility with Semi-Private Rolls.
+            messageData.flags = {
+                'semi-private-rolls': {
+                    flavor: messageData.flavor
+                }
+            };
+            // Flavor is already included in custom template.
+            delete messageData.flavor;
+
+            // Conditionally hide DsN based on extraAttackDSN setting.
+            const dsn = isExtraAttack 
+                ? game.settings.get(moduleID, 'extraAttackDSN')
+                : game.settings.get(moduleID, 'multiattackDSN');
+            if (dsn !== 'enabled' && (extraAttackDSN === 'disabled' || dsn !== rollType)) {
+                Hooks.once('diceSoNiceRollStart', (id, context) => { context.blind = true });
+            }
+
+            // Create condensed chat message.
+            if (chatMessage) await ChatMessage.create(messageData, { rollMode });
+
+            return rolls;
+
+        } else if (roller === "rsr") {
+            // Hide DSN based on module setting
+            let hk;
+            if (!game.settings.get(moduleID, "readySetRollDSN")) hk = Hooks.on("diceSoNiceRollStart", (messageID, context) => { context.blind = true });
+
+            // Use rsr5e to perform rolls
+            for (const id of itemArray) {
+                const item = isIDs ? actor.items.get(id) : actor.items.getName(id);
+                rsr5e.macro.rollItem(item._id, actor._id);
+            }
+            if (hk) Hooks.off("diceSoNiceRollStart", hk);
         }
-
-        // Create condensed chat message.
-        if (chatMessage) await ChatMessage.create(messageData, { rollMode });
-
-        return rolls;
     }
 
     static async multiattackTool() {
