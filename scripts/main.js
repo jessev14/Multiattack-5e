@@ -23,7 +23,7 @@ Hooks.once('init', () => {
     game.settings.register(moduleID, 'condenseChatMessagesEnabled', {
         name: ma5eLocalize('settings.condenseChatMessagesEnabled.name'),
         scope: 'world',
-        config: true, //roller === 'core',
+        config: roller === 'core',
         type: Boolean,
         default: true
     });
@@ -50,7 +50,7 @@ Hooks.once('init', () => {
         name: ma5eLocalize('settings.extraAttackDSN.name'),
         hint: ma5eLocalize('settings.extraAttackDSN.hint'),
         scope: 'world',
-        config: game.modules.get('dice-so-nice')?.active, // && roller === 'core',
+        config: game.modules.get('dice-so-nice')?.active && roller === 'core',
         type: String,
         choices: {
             disabled: ma5eLocalize('settings.disabled'),
@@ -64,7 +64,7 @@ Hooks.once('init', () => {
     game.settings.register(moduleID, 'multiattackDSN', {
         name: ma5eLocalize('settings.multiattackDSN.name'),
         scope: 'world',
-        config: game.modules.get('dice-so-nice')?.active, // && roller === 'core',
+        config: game.modules.get('dice-so-nice')?.active && roller === 'core',
         type: String,
         choices: {
             disabled: ma5eLocalize('settings.disabled'),
