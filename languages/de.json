@@ -1,0 +1,52 @@
+{
+    "multiattack-5e": {
+        "settings": {
+            "condenseChatMessagesEnabled": {
+                "name": "Mehrere Angriffs-/Schadenswürfe zusammenfassen"
+            },
+            "multiattackToolEnabled": {
+                "name":"Mehrfachangriff-Werkzeug",
+                "hint": "Aktiviert das Mehrfachangriff-Werkzeug in der Figurenkontrollleiste."
+            },
+            "playerToolEnabled": {
+                "name": "Mehrfachangriff-Werkzeug für Spieler" ,
+                "hint": "Setzt voraus, dass \"Mehrfachangriff-Werkzeug\" aktiviert ist."
+            },
+            "extraAttackDSN": {
+                "name": "DsN! für Zusätzliche Angriffe",
+                "hint": "Hat keine Auswirkung auf einzelne Angriffs-/Schadenswürfe."
+            },
+            "multiattackDSN": {
+                "name": "DsN! für Mehrfachangriffe"
+            },
+            "betterRollsDSN": {
+                "name": "DsN! für Better Rolls"
+            },
+            "disabled": "Deaktiviert",
+            "attackOnly": "Nur Angriffswürfe",
+            "damageOnly": "Nur Schadenswürfe",
+            "enabled": "Aktiviert"
+        },
+        "dialog": {
+            "numberOfRolls": "Anzahl Würfe"
+        },
+        "ui": {
+            "selectOneToken": "Eine Figur wählen.",
+            "setDefault": "Default gesetzt für",
+            "clearDefault": "Default gelöscht für"
+        },
+        "chat": {
+            "total": "Gesamt"
+        },
+        "tool": {
+            "control": {
+                "title": "Mehrfachangriff"
+            },
+            "dialog": {
+                "title": "Mehrfachangriff-Werkzeug",
+                "setDefault": "Default setzen",
+                "clearDefault": "Default löschen"
+            }
+        }
+    }
+}
